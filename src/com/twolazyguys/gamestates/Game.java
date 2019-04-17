@@ -1,67 +1,55 @@
 package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
-import net.colozz.engine2.MainClass;
-import net.colozz.engine2.entities.ColoredQuad;
-import net.colozz.engine2.entities.Entity;
+import com.twolazyguys.entities.Colormap;
+import com.twolazyguys.util.ColorSpritesheet;
+import com.twolazyguys.util.Sprite;
 import net.colozz.engine2.gamestates.GameState;
 import net.colozz.engine2.util.Color;
-import net.colozz.engine2.util.texture.SpriteSheet;
-import net.colozz.engine2.util.ui.Text;
-import net.colozz.engine2.util.vectors.Vector2f;
+import org.lwjgl.glfw.GLFW;
 
-import java.util.Arrays;
+import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState {
 
-    private SpriteSheet spriteSheet = new SpriteSheet(MainClass.getTextureManager().getTexture("spritesheet"), 1, 2, Entity.TEXTURE);
-
-    private ColoredQuad background, inputOutline;
-    private ColoredQuad[] barriers;
-    private Entity[] dwarfSprites;
-    private Text input;
-
-    private float count = 0;
+    private ColorSpritesheet sheet;
+    private Colormap colormap;
+    private Sprite[] sprites;
+    private int current;
+    private float count;
 
     private final Color bright = new Color(92, 92, 48);
     private final Color dark = new Color(53, 53, 28);
 
+    private final int X_PIXELS = 128, Y_PIXELS = 72;
+
     public Game() {
-        background = new ColoredQuad(new Vector2f(0, 0), new Vector2f(Main.width, Main.height), bright);
+        glClearColor(bright.r, bright.g, bright.b, bright.a);
 
-        inputOutline = new ColoredQuad(new Vector2f(Main.width / 20, Main.width / 20), new Vector2f(Main.width * 0.9f, Main.width / 20), dark, false);
+        sheet = new ColorSpritesheet(1, 2, "spritesheet");
+        colormap = new Colormap(X_PIXELS, Y_PIXELS, bright);
 
-        barriers = new ColoredQuad[4];
-        Color[] barriersColors = new Color[]{Color.GREEN, Color.YELLOW, Color.ORANGE, Color.RED};
-        for (int i = 0; i < 4; i++)
-            barriers[i] = new ColoredQuad(new Vector2f(Main.width / 20 + 10 * i, Main.height * 0.65f + 10 * i), new Vector2f(Main.height * 0.3f - 20 * i, Main.height * 0.3f - 20 * i), barriersColors[i]);
+        sprites = new Sprite[]{sheet.getSprite(0, 0), sheet.getSprite(0, 1)};
+        colormap.addSprite(sprites[0]);
 
-        dwarfSprites = new Entity[]{spriteSheet.getSprite(0, 0), spriteSheet.getSprite(0, 1)};
-        dwarfSprites[1].setColor(Color.TRANSPARENT);
-        for (Entity dwarfSprite : dwarfSprites) {
-            dwarfSprite.modelMatrix.translate(new Vector2f(Main.width / 2, Main.height * 0.65f));
-            dwarfSprite.modelMatrix.scale(new Vector2f(60, 60));
-        }
-
-        input = new Text(new Vector2f(Main.width / 20, Main.width / 20), "hello world", 24);
-        input.setColor(dark);
-
-        entities.add(background);
-        entities.add(inputOutline);
-        entities.addAll(Arrays.asList(barriers));
-        entities.addAll(Arrays.asList(dwarfSprites));
-        entities.add(input);
+        entities.add(colormap);
     }
 
     @Override
     public void update() {
+        GLFW.glfwSetWindowTitle(Main.window, getClass().getName() + " - " + Main.fps + "fps");
+
         count += Main.delta;
-        if (count > 0.75f) {
+        if (count > 0.5f) {
+            colormap.removeSprite(sprites[current]);
+            colormap.addSprite(sprites[1 - current]);
+            current = 1 - current;
             count = 0;
-            boolean b = dwarfSprites[0].getColor().a == 0.0f;
-            dwarfSprites[0].setColor(b ? Color.WHITE : Color.TRANSPARENT);
-            dwarfSprites[1].setColor(b ? Color.TRANSPARENT : Color.WHITE);
         }
+    }
+
+    public Color getColor(float intensity) {
+        return new Color((bright.r - dark.r) * intensity + dark.r, (bright.g - dark.g) * intensity + dark.g, (bright.b - dark.b) * intensity + dark.b);
     }
 
 }
