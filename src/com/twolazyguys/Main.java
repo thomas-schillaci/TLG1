@@ -16,7 +16,9 @@ public class Main extends MainClass {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         getTextureManager().loadAllTextures();
-        setGameState(new Game());
+        Game game = new Game();
+        setGameState(game);
+        addListener(game);
     }
 
 }
