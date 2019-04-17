@@ -1,19 +1,22 @@
-package com.twolazyguys.util;
+package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.SpriteChangedEvent;
-import net.colozz.engine2.util.Color;
 
 public class Sprite {
 
     private int x, y;
-    private Color[][] colors;
+    private float[][] colors;
 
-    public Sprite(Color[][] colors) {
+    public Sprite() {
+
+    }
+
+    public Sprite(float[][] colors) {
         this(0, 0, colors);
     }
 
-    public Sprite(int x, int y, Color[][] colors) {
+    public Sprite(int x, int y, float[][] colors) {
         this.x = x;
         this.y = y;
         this.colors = colors;
@@ -27,7 +30,7 @@ public class Sprite {
         return y;
     }
 
-    public Color[][] getColors() {
+    public float[][] getColors() {
         return colors;
     }
 
@@ -41,8 +44,13 @@ public class Sprite {
         Main.callEvent(new SpriteChangedEvent(this));
     }
 
-    public void setColors(Color[][] colors) {
+    public void setColors(float[][] colors) {
         this.colors = colors;
         Main.callEvent(new SpriteChangedEvent(this));
     }
+
+    public void update() {
+
+    }
+
 }

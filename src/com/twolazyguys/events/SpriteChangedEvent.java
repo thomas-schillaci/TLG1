@@ -1,6 +1,6 @@
 package com.twolazyguys.events;
 
-import com.twolazyguys.util.Sprite;
+import com.twolazyguys.sprites.Sprite;
 import net.colozz.engine2.events.Event;
 
 public class SpriteChangedEvent extends Event {

@@ -2,11 +2,12 @@ package com.twolazyguys.entities;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.SpriteChangedEvent;
-import com.twolazyguys.util.Sprite;
+import com.twolazyguys.gamestates.Game;
+import com.twolazyguys.sprites.Sprite;
 import net.colozz.engine2.entities.Entity;
 import net.colozz.engine2.events.EventHandler;
+import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
-import net.colozz.engine2.util.Color;
 import net.colozz.engine2.util.vectors.Matrix4f;
 import org.lwjgl.BufferUtils;
 
@@ -15,40 +16,47 @@ import java.util.ArrayList;
 
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
+import static org.lwjgl.opengl.GL20.*;
 
 public class Colormap extends Entity implements Listener {
 
     private int sizeX, sizeY;
-    private Color bright;
 
     private ArrayList<Sprite> sprites;
 
-    public Colormap(int sizeX, int sizeY, Color bright) {
-        super(2, genData(sizeX, sizeY, bright), genIndices(sizeX, sizeY), GL_TRIANGLES);
+    private int intensityLocation, brightLocation, darkLocation;
+
+    public Colormap(int sizeX, int sizeY) {
+        super(2, genData(sizeX, sizeY), genIndices(sizeX, sizeY), GL_TRIANGLES);
         this.sizeX = sizeX;
         this.sizeY = sizeY;
-        this.bright = bright;
         sprites = new ArrayList<>();
+        intensityLocation = glGetAttribLocation(Main.shaderPrograms[2], "a_intensity");
+        brightLocation = glGetUniformLocation(Main.shaderPrograms[2], "u_bright");
+        darkLocation = glGetUniformLocation(Main.shaderPrograms[2], "u_dark");
     }
 
     @Override
     public void update() {
-
+        for (Sprite sprite : sprites) sprite.update();
     }
 
     @Override
     public void draw(Matrix4f viewMatrix, Matrix4f projectionMatrix) {
         enableDraw();
-        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableVertexAttribArray(intensityLocation);
 
-        glVertexPointer(2, GL_FLOAT, 2 * 4 + 4 * 4, 0);
-        glColorPointer(4, GL_FLOAT, 2 * 4 + 4 * 4, 2 * 4);
+        glVertexPointer(2, GL_FLOAT, 2 * 4 + 1 * 4, 0);
+        glVertexAttribPointer(intensityLocation, 1, GL_FLOAT, false, 2 * 4 + 1 * 4, 2 * 4);
+        glColorPointer(1, GL_FLOAT, 2 * 4 + 1 * 4, 2 * 4);
+        glUniform3f(brightLocation, Game.BRIGHT.r, Game.BRIGHT.g, Game.BRIGHT.b);
+        glUniform3f(darkLocation, Game.DARK.r, Game.DARK.g, Game.DARK.b);
         passMainBuffers(viewMatrix, projectionMatrix);
 
-        glDrawElements(drawingMode, indicesCount, GL_UNSIGNED_SHORT, 0);
+        glDrawElements(drawingMode, indicesCount, GL_UNSIGNED_INT, 0);
 
         disableDraw();
-        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableVertexAttribArray(intensityLocation);
     }
 
     @EventHandler
@@ -57,11 +65,11 @@ public class Colormap extends Entity implements Listener {
     }
 
     private void updateData() {
-        Color[][] colors = new Color[sizeX][sizeY];
-        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = bright;
+        float[][] colors = new float[sizeX][sizeY];
+        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = 1.0f;
 
         for (Sprite sprite : sprites) {
-            Color[][] spriteColors = sprite.getColors();
+            float[][] spriteColors = sprite.getColors();
             for (int i = 0; i < spriteColors.length; i++)
                 for (int j = 0; j < spriteColors[0].length; j++)
                     colors[sprite.getX() + i][sprite.getY() + j] = spriteColors[i][j];
@@ -87,51 +95,57 @@ public class Colormap extends Entity implements Listener {
     }
 
     public void clearSprites() {
+        if (sprites.size() == 0) return;
         sprites.clear();
         updateData();
     }
 
-    private static float[] genData(int sizeX, int sizeY, Color bright) {
-        Color[][] colors = new Color[sizeX][sizeY];
-        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = bright;
+    private static float[] genData(int sizeX, int sizeY) {
+        float[][] colors = new float[sizeX][sizeY];
+        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = 1.0f;
         return genData(sizeX, sizeY, colors);
     }
 
-    private static float[] genData(int sizeX, int sizeY, Color[][] colors) {
+    private static float[] genData(int sizeX, int sizeY, float[][] colors) {
         int dr = Main.width / sizeX;
-        int vertices = (sizeX - 1) * (sizeY - 1) + 2 * (sizeX + sizeY);
+        int vertices = 4 * sizeX * sizeY;
 
-        float[] data = new float[vertices * (2 + 4)];
+        float[] data = new float[vertices * (2 + 1)];
 
         int index = 0;
-        for (int i = 0; i <= sizeX; i++) {
-            for (int j = 0; j <= sizeY; j++) {
+        for (int i = 0; i < sizeX; i++) {
+            for (int j = 0; j < sizeY; j++) {
                 data[index++] = i * dr;
                 data[index++] = j * dr;
-                Color color = colors[i - (i == sizeX ? 1 : 0)][j - (j == sizeY ? 1 : 0)];
-                data[index++] = color.r;
-                data[index++] = color.g;
-                data[index++] = color.b;
-                data[index++] = color.a;
+                data[index++] = colors[i][j];
+                data[index++] = (i + 1) * dr;
+                data[index++] = j * dr;
+                data[index++] = colors[i][j];
+                data[index++] = i * dr;
+                data[index++] = (j + 1) * dr;
+                data[index++] = colors[i][j];
+                data[index++] = (i + 1) * dr;
+                data[index++] = (j + 1) * dr;
+                data[index++] = colors[i][j];
             }
         }
 
         return data;
     }
 
-    private static short[] genIndices(int sizeX, int sizeY) {
-        short[] indices = new short[6 * sizeX * sizeY];
+    private static int[] genIndices(int sizeX, int sizeY) {
+        int[] indices = new int[6 * sizeX * sizeY];
 
         int index = 0;
-        for (int i = 0; i < sizeX; i++) {
-            for (int j = 0; j < sizeY; j++) {
-                indices[index++] = (short) (i * (sizeY + 1) + j);
-                indices[index++] = (short) (i * (sizeY + 1) + j + 1);
-                indices[index++] = (short) ((i + 1) * (sizeY + 1) + j);
-                indices[index++] = (short) (i * (sizeY + 1) + j + 1);
-                indices[index++] = (short) ((i + 1) * (sizeY + 1) + j + 1);
-                indices[index++] = (short) ((i + 1) * (sizeY + 1) + j);
-            }
+        int value = 0;
+        for (int k = 0; k < sizeX * sizeY; k++) {
+            indices[index++] = value;
+            indices[index++] = value + 1;
+            indices[index++] = value + 2;
+            indices[index++] = value + 1;
+            indices[index++] = value + 3;
+            indices[index++] = value + 2;
+            value += 4;
         }
 
         return indices;
