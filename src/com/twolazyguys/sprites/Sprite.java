@@ -8,10 +8,6 @@ public class Sprite {
     private int x, y;
     private float[][] colors;
 
-    public Sprite() {
-
-    }
-
     public Sprite(float[][] colors) {
         this(0, 0, colors);
     }
@@ -47,10 +43,6 @@ public class Sprite {
     public void setColors(float[][] colors) {
         this.colors = colors;
         Main.callEvent(new SpriteChangedEvent(this));
-    }
-
-    public void update() {
-
     }
 
 }

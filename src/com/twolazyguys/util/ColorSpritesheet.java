@@ -27,15 +27,15 @@ public class ColorSpritesheet {
     public Sprite getSprite(int row, int column) {
         int dx = colors.length / columns, dy = colors[0].length / rows;
 
-        float[][] sprite = new float[dx][dy];
-        for (int i = 0; i < sprite.length; i++)
-            for (int j = 0; j < sprite[0].length; j++) sprite[i][j] = colors[column * dx + i][row * dy + j];
+        float[][] colors = new float[dx][dy];
+        for (int i = 0; i < colors.length; i++)
+            for (int j = 0; j < colors[0].length; j++) colors[i][j] = this.colors[column * dx + i][row * dy + j];
 
-        return new Sprite(sprite);
+        return new Sprite(colors);
     }
 
     private static float[][] transformTexture(String texture) {
-        float[][] color = null;
+        float[][] colors = null;
         try {
             InputStream in = new FileInputStream(Main.PATH + "tex/" + texture + ".png");
             PNGDecoder decoder = new PNGDecoder(in);
@@ -46,16 +46,30 @@ public class ColorSpritesheet {
             decoder.decode(buffer, width, PNGDecoder.Format.LUMINANCE);
             buffer.flip();
 
-            color = new float[width][height];
-            for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++) color[j][height - i - 1] = (float) (1 - buffer.get());
+            boolean binary = true;
+            colors = new float[width][height];
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    float b = buffer.get();
+                    colors[j][height - i - 1] = b;
+                    if ((int) Math.abs(b) != 0 && (int) Math.abs(b) != 1) binary = false;
+                }
+            }
+
+            // TODO FIXME
+            for (int x = 0; x < colors.length; x++) {
+                for (int y = 0; y < colors[0].length; y++) {
+                    if (binary) colors[x][y] += 1;
+                    else colors[x][y] = 1 + colors[x][y] / 50;
+                }
+            }
 
             in.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return color;
+        return colors;
     }
 
     public int getSizeX() {

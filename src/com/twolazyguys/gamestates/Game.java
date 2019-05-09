@@ -2,6 +2,7 @@ package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
+import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -55,6 +56,10 @@ public class Game extends GameState implements Listener {
     @Override
     public void update() {
         GLFW.glfwSetWindowTitle(Main.window, getClass().getName() + " - " + Main.fps + "fps");
+        Main.callEvent(new GameTickEvent());
     }
 
+    public Colormap getColormap() {
+        return colormap;
+    }
 }

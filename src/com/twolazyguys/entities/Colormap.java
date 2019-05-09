@@ -37,7 +37,6 @@ public class Colormap extends Entity implements Listener {
 
     @Override
     public void update() {
-        for (Sprite sprite : sprites) sprite.update();
     }
 
     @Override
