@@ -16,6 +16,7 @@ varying vec3 v_dark;
 void main() {
     float r = 1.0 - pow((abs(2.0 * gl_Vertex.x / 640 - 1.0) - 1.0), 1.0) * pow((abs(2.0 * gl_Vertex.y / 360 - 1.0) - 1.0), 1.0);
     mat4 distortion;
+    r = 1.0;
     distortion[0] = vec4(r, 0.0, 0.0, 0.0);
     distortion[1] = vec4(0.0, r, 0.0, 0.0);
     distortion[2] = vec4(0.0, 0.0, 1.0, 0.0);
