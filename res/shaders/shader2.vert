@@ -12,6 +12,7 @@ uniform vec3 u_dark;
 varying float v_intensity;
 varying vec3 v_bright;
 varying vec3 v_dark;
+varying float v_random;
 
 void main() {
     float r = 1.0 - pow((abs(2.0 * gl_Vertex.x / 640 - 1.0) - 1.0), 1.0) * pow((abs(2.0 * gl_Vertex.y / 360 - 1.0) - 1.0), 1.0);
@@ -24,7 +25,7 @@ void main() {
 
     gl_Position = distortion * projection * view * model * gl_Vertex;
 
-    v_intensity = a_intensity;
+    v_intensity = min(1.0, a_intensity + mod(gl_Position.x*128, 2)/20);
     v_bright = u_bright;
     v_dark = u_dark;
 }
