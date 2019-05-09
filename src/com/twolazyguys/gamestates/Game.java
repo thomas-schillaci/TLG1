@@ -11,8 +11,7 @@ import net.colozz.engine2.gamestates.GameState;
 import net.colozz.engine2.util.Color;
 import org.lwjgl.glfw.GLFW;
 
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState implements Listener {
@@ -26,11 +25,12 @@ public class Game extends GameState implements Listener {
 
     private final int X_PIXELS = 256, Y_PIXELS = 144;
 
+    private Colormap colormap;
+
     public Game() {
         glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
 
-        Colormap colormap = new Colormap(X_PIXELS, Y_PIXELS) {{
-            addSprite(new Dwarf());
+        colormap = new Colormap(X_PIXELS, Y_PIXELS) {{
             addSprite(input);
         }};
 
@@ -41,7 +41,13 @@ public class Game extends GameState implements Listener {
     @EventHandler
     public void onKeyboardInputEvent(KeyboardInputEvent e) {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
-        input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));
+
+        if (e.getAction() == GLFW_PRESS) {
+            if (e.getKey() == GLFW_KEY_ENTER) {
+                if (input.getValue().equals("s dwarf")) colormap.addSprite(new Dwarf());
+                input.setValue("s ");
+            } else input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));
+        }
     }
 
     public boolean isKeyDown(int keycode) {
