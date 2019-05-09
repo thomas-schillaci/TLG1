@@ -48,7 +48,7 @@ public class ColorSpritesheet {
 
             color = new float[width][height];
             for (int i = 0; i < height; i++)
-                for (int j = 0; j < width; j++) color[j][height - i - 1] = (float) -buffer.get();
+                for (int j = 0; j < width; j++) color[j][height - i - 1] = (float) (1 - buffer.get());
 
             in.close();
         } catch (IOException e) {

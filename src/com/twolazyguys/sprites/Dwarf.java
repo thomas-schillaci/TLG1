@@ -9,7 +9,7 @@ public class Dwarf extends Sprite {
     private int current;
     private float count;
 
-    private static ColorSpritesheet sheet = new ColorSpritesheet(1, 2, "spritesheet");
+    private static ColorSpritesheet sheet = new ColorSpritesheet(3, 2, "dwarfsheet");
 
     public Dwarf() {
         super(50, 100, sheet.getSprite(0, 0).getColors());
