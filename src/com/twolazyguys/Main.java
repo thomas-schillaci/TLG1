@@ -6,6 +6,8 @@ import net.colozz.engine2.MainClass;
 public class Main extends MainClass {
 
     public static void main(String[] args) {
+        width = 1280;
+        height = 720;
         new Main();
     }
 
