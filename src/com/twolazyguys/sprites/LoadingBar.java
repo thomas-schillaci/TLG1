@@ -4,6 +4,8 @@ import com.twolazyguys.Main;
 import com.twolazyguys.events.AttackEvent;
 
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.events.SpriteChangedEvent;
+
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
 
@@ -37,7 +39,7 @@ public class LoadingBar extends Sprite implements Listener {
 	@EventHandler
 	public void onGameTickEvent(GameTickEvent e) {
 		count += Main.delta;
-		if (count > 0f) {
+		if (count > 0.5f) {
 			if (wantedLevel > 0 && percent < wantedLevel) {
 				int step = (int) (DOWNLOADING_SPEED * count);
 				int sup = Math.min(percent + step, wantedLevel);
@@ -51,6 +53,7 @@ public class LoadingBar extends Sprite implements Listener {
 				}
 				percent += (sup-percent);
 				if(step!=0) count=0;
+				Main.callEvent(new SpriteChangedEvent(this));
 			}
 		}
 	}
