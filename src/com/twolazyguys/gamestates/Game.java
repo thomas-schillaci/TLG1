@@ -19,56 +19,56 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState implements Listener {
 
-    private Terminal terminal = new Terminal();
+	private Terminal terminal = new Terminal();
 
-    private boolean[] keys = new boolean[65536];
+	private boolean[] keys = new boolean[65536];
 
-    public final static Color BRIGHT = new Color(92, 92, 48);
-    public final static Color DARK = new Color(53, 53, 28);
+	public final static Color BRIGHT = new Color(92, 92, 48);
+	public final static Color DARK = new Color(53, 53, 28);
 
-    private final int X_PIXELS = 256, Y_PIXELS = 144;
+	private final int X_PIXELS = 256, Y_PIXELS = 144;
 
-    private Colormap colormap;
+	private Colormap colormap;
 
-    public Game() {
-        glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
+	public Game() {
+		glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
 
-        Main.addListener(terminal);
+		Main.addListener(terminal);
 
-        colormap = new Colormap(X_PIXELS, Y_PIXELS);
-        colormap.addSprite(terminal);
-        
-        entities.add(colormap);
-        Main.addListener(colormap);
-//      modif
-        LoadingBar lb = new LoadingBar();
-        colormap.addSprite(lb);
-        Main.addListener(lb);
-//        
-    }
+		colormap = new Colormap(X_PIXELS, Y_PIXELS);
+		colormap.addSprite(terminal);
 
-    @EventHandler
-    public void onKeyboardInputEvent(KeyboardInputEvent e) {
-        keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
-        if (e.getAction() == GLFW_PRESS) {
-//        	modif
-        	AttackEvent attack = new AttackEvent(0,10);
-            Main.callEvent(attack);
-//            
-        }
-    }
+		entities.add(colormap);
+		Main.addListener(colormap);
+		// modif
+		LoadingBar lb = new LoadingBar();
+		colormap.addSprite(lb);
+		Main.addListener(lb);
+		//
+	}
 
-    public boolean isKeyDown(int keycode) {
-        return keys[keycode];
-    }
+	@EventHandler
+	public void onKeyboardInputEvent(KeyboardInputEvent e) {
+		keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
+		// modif
+		AttackEvent attack = new AttackEvent(0, 10);
+		Main.callEvent(attack);
+		//
+		if (e.getAction() == GLFW_PRESS) {
+		}
+	}
 
-    @Override
-    public void update() {
-        GLFW.glfwSetWindowTitle(Main.window, getClass().getName() + " - " + Main.fps + "fps");
-        Main.callEvent(new GameTickEvent());
-    }
+	public boolean isKeyDown(int keycode) {
+		return keys[keycode];
+	}
 
-    public Colormap getColormap() {
-        return colormap;
-    }
+	@Override
+	public void update() {
+		GLFW.glfwSetWindowTitle(Main.window, getClass().getName() + " - " + Main.fps + "fps");
+		Main.callEvent(new GameTickEvent());
+	}
+
+	public Colormap getColormap() {
+		return colormap;
+	}
 }
