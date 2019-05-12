@@ -13,11 +13,13 @@ public class Text extends Sprite {
     private static int dy = sheet.getSizeY();
 
     public Text(int x, int y, String value) {
-        super(x, y, getColors(value));
+        super(x, y, genColors(value));
         this.value = value;
     }
 
-    private static float[][] getColors(String value) {
+    private static float[][] genColors(String value) {
+        if (value.equals("")) return new float[0][0];
+
         float[][] colors = new float[dx * value.length()][dy];
 
         String[] letters = value.split("");
@@ -30,8 +32,8 @@ public class Text extends Sprite {
     }
 
     public void setValue(String value) {
-        setColors(getColors(value));
-        this.value=value;
+        setColors(genColors(value));
+        this.value = value;
     }
 
     public String getValue() {

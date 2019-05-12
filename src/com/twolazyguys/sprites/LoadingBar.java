@@ -34,7 +34,6 @@ public class LoadingBar extends Sprite implements Listener {
 		return emptyBar;
 	}
 
-	@Override
 	public void update() {
 		count += Main.delta;
 		if(count > 0.5f) {

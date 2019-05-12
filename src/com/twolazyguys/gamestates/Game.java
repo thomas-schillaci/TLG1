@@ -2,12 +2,8 @@ package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
-import com.twolazyguys.events.AttackEvent;
-import com.twolazyguys.sprites.Dwarf;
-import com.twolazyguys.sprites.LoadingBar;
-import com.twolazyguys.sprites.Text;
-
-import net.colozz.engine2.events.Event;
+import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
@@ -15,12 +11,13 @@ import net.colozz.engine2.gamestates.GameState;
 import net.colozz.engine2.util.Color;
 import org.lwjgl.glfw.GLFW;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState implements Listener {
 
-    private Text input = new Text(10, 10, "s ");
+    private Terminal terminal = new Terminal();
 
     private boolean[] keys = new boolean[65536];
 
@@ -34,14 +31,11 @@ public class Game extends GameState implements Listener {
     public Game() {
         glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
 
-        colormap = new Colormap(X_PIXELS, Y_PIXELS) {{
-            addSprite(input);
-        }};
-//      modiff
-        LoadingBar lb = new LoadingBar();
-        colormap.addSprite(lb);
-        Main.addListener(lb);
-//
+        Main.addListener(terminal);
+
+        colormap = new Colormap(X_PIXELS, Y_PIXELS);
+        colormap.addSprite(terminal);
+
         entities.add(colormap);
         Main.addListener(colormap);
     }
@@ -51,13 +45,7 @@ public class Game extends GameState implements Listener {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
 
         if (e.getAction() == GLFW_PRESS) {
-//        	modiff
-        	Main.callEvent(new AttackEvent(10,10));
-//        	
-            if (e.getKey() == GLFW_KEY_ENTER) {
-                if (input.getValue().equals("s dwarf")) colormap.addSprite(new Dwarf());
-                input.setValue("s ");
-            } else input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));
+
         }
     }
 
@@ -68,6 +56,10 @@ public class Game extends GameState implements Listener {
     @Override
     public void update() {
         GLFW.glfwSetWindowTitle(Main.window, getClass().getName() + " - " + Main.fps + "fps");
+        Main.callEvent(new GameTickEvent());
     }
 
+    public Colormap getColormap() {
+        return colormap;
+    }
 }

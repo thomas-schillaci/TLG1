@@ -6,7 +6,6 @@ import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.sprites.Sprite;
 import net.colozz.engine2.entities.Entity;
 import net.colozz.engine2.events.EventHandler;
-import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
 import net.colozz.engine2.util.vectors.Matrix4f;
 import org.lwjgl.BufferUtils;
@@ -38,7 +37,6 @@ public class Colormap extends Entity implements Listener {
 
     @Override
     public void update() {
-        for (Sprite sprite : sprites) sprite.update();
     }
 
     @Override
@@ -66,7 +64,6 @@ public class Colormap extends Entity implements Listener {
 
     private void updateData() {
         float[][] colors = new float[sizeX][sizeY];
-        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = 1.0f;
 
         for (Sprite sprite : sprites) {
             float[][] spriteColors = sprite.getColors();
@@ -101,13 +98,11 @@ public class Colormap extends Entity implements Listener {
     }
 
     private static float[] genData(int sizeX, int sizeY) {
-        float[][] colors = new float[sizeX][sizeY];
-        for (int i = 0; i < colors.length; i++) for (int j = 0; j < colors[0].length; j++) colors[i][j] = 1.0f;
-        return genData(sizeX, sizeY, colors);
+        return genData(sizeX, sizeY, new float[sizeX][sizeY]);
     }
 
     private static float[] genData(int sizeX, int sizeY, float[][] colors) {
-        int dr = Main.width / sizeX;
+        float dr = (float) Main.width / sizeX;
         int vertices = 4 * sizeX * sizeY;
 
         float[] data = new float[vertices * (2 + 1)];
