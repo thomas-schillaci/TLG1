@@ -2,8 +2,12 @@ package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
+import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.sprites.Dwarf;
+import com.twolazyguys.sprites.LoadingBar;
 import com.twolazyguys.sprites.Text;
+
+import net.colozz.engine2.events.Event;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
@@ -33,7 +37,11 @@ public class Game extends GameState implements Listener {
         colormap = new Colormap(X_PIXELS, Y_PIXELS) {{
             addSprite(input);
         }};
-
+//      modiff
+        LoadingBar lb = new LoadingBar();
+        colormap.addSprite(lb);
+        Main.addListener(lb);
+//
         entities.add(colormap);
         Main.addListener(colormap);
     }
@@ -43,6 +51,9 @@ public class Game extends GameState implements Listener {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
 
         if (e.getAction() == GLFW_PRESS) {
+//        	modiff
+        	Main.callEvent(new AttackEvent(10,10));
+//        	
             if (e.getKey() == GLFW_KEY_ENTER) {
                 if (input.getValue().equals("s dwarf")) colormap.addSprite(new Dwarf());
                 input.setValue("s ");
