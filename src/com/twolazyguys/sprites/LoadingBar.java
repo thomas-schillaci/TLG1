@@ -4,6 +4,7 @@ package com.twolazyguys.sprites;
 import com.twolazyguys.Main;
 import com.twolazyguys.events.AttackEvent;
 
+import com.twolazyguys.events.GameTickEvent;
 import net.colozz.engine2.events.Event;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
@@ -33,7 +34,8 @@ public class LoadingBar extends Sprite implements Listener {
 		return emptyBar;
 	}
 
-	public void update() {
+	@EventHandler
+	public void onGameTickEvent(GameTickEvent e) {
 		count += Main.delta;
 		if(count > 0.5f) {
 			if(percent < wantedLevel) {
@@ -49,7 +51,7 @@ public class LoadingBar extends Sprite implements Listener {
 	}
 	
 	@EventHandler
-	private void onAttackEvent(AttackEvent attack) {
+	public void onAttackEvent(AttackEvent attack) {
 		System.out.println("debug");
 		wantedLevel = percent + attack.getWantedLevel();
 		for(int j = percent; j <= Math.max(wantedLevel,WIDTH-2); j++) {
