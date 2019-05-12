@@ -40,22 +40,16 @@ public class Game extends GameState implements Listener {
 
 		entities.add(colormap);
 		Main.addListener(colormap);
-		// modif
 		LoadingBar lb = new LoadingBar();
 		colormap.addSprite(lb);
 		Main.addListener(lb);
-		//
 	}
 
 	@EventHandler
 	public void onKeyboardInputEvent(KeyboardInputEvent e) {
 		keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
-		// modif
-		AttackEvent attack = new AttackEvent(0, 10);
-		Main.callEvent(attack);
-		//
-		if (e.getAction() == GLFW_PRESS) {
-		}
+		
+		if (e.getAction() == GLFW_PRESS) {}
 	}
 
 	public boolean isKeyDown(int keycode) {

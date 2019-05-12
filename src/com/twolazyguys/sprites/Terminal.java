@@ -1,6 +1,7 @@
 package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
+import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.gamestates.Game;
 import net.colozz.engine2.events.EventHandler;
@@ -55,6 +56,10 @@ public class Terminal extends Sprite implements Listener {
                     Dwarf dwarf = new Dwarf();
                     ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
                     Main.addListener(dwarf);
+                }
+                if (input.getValue().equals("attack")) {
+            		AttackEvent attack = new AttackEvent(0, 10);
+            		Main.callEvent(attack);
                 }
                 input.setValue("");
             } else input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));

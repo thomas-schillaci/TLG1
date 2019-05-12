@@ -52,9 +52,9 @@ public class LoadingBar extends Sprite implements Listener {
 					}
 				}
 				percent += (sup-percent);
-				if(step!=0) count=0;
 				Main.callEvent(new SpriteChangedEvent(this));
 			}
+			count = 0;
 		}
 	}
 
