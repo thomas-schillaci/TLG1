@@ -13,7 +13,7 @@ public class LoadingBar extends Sprite implements Listener {
 	private int wantedLevel;
 	private int percent;
 	private static int LENGTH = 150, WIDTH = 15, DOWNLOADING_SPEED = 1;
-	private static float DONE_COLOR = 0, INPROGRESS_COLOR = 0.7f;
+	private static float DONE_COLOR = 1, INPROGRESS_COLOR = 0.5f;
 	
 	public LoadingBar() {
 		super(105,125,createEmptyBar());
@@ -27,8 +27,7 @@ public class LoadingBar extends Sprite implements Listener {
 		float[][] emptyBar = new float[LENGTH][WIDTH];
 		for(int i = 0 ; i < LENGTH; i++) {
 			for(int j = 0 ; j < WIDTH ; j++) {
-				if(i==0 || i == LENGTH-1 || j==0 || j == WIDTH-1) emptyBar[i][j] = 0.5f;
-				else emptyBar[i][j] = 0.85f;
+				if(i==0 || i == LENGTH-1 || j==0 || j == WIDTH-1) emptyBar[i][j] = 0.7f;
 			}
 		}
 		return emptyBar;
@@ -51,7 +50,7 @@ public class LoadingBar extends Sprite implements Listener {
 	
 	@EventHandler
 	private void onAttackEvent(AttackEvent attack) {
-		System.out.println("");
+		System.out.println("debug");
 		wantedLevel = percent + attack.getWantedLevel();
 		for(int j = percent; j <= Math.max(wantedLevel,WIDTH-2); j++) {
 			for(int i = 1; i < LENGTH-1; i++) {

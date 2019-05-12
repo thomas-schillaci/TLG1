@@ -2,7 +2,9 @@ package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
+import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.sprites.LoadingBar;
 import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -35,17 +37,24 @@ public class Game extends GameState implements Listener {
 
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
         colormap.addSprite(terminal);
-
+        
         entities.add(colormap);
         Main.addListener(colormap);
+//      modif
+        LoadingBar lb = new LoadingBar();
+        colormap.addSprite(lb);
+        Main.addListener(lb);
+//        
     }
 
     @EventHandler
     public void onKeyboardInputEvent(KeyboardInputEvent e) {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
-
         if (e.getAction() == GLFW_PRESS) {
-
+//        	modif
+        	AttackEvent attack = new AttackEvent(0,10);
+            Main.callEvent(attack);
+//            
         }
     }
 
