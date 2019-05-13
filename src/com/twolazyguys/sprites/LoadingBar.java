@@ -13,12 +13,12 @@ public class LoadingBar extends Sprite implements Listener {
 	private float count;
 	private int wantedLevel;
 	private int percent;
-	private static int LENGTH = 150, WIDTH = 15;
+	private static int LENGTH = 200, WIDTH = 15;
 	private static float CHARGING_SPEED = 4f,  DISCHARGING_SPEED = 2f;
 	private static float DONE_COLOR = 1, INPROGRESS_COLOR = 0.3f;
 
 	public LoadingBar() {
-		super(105, 128, createEmptyBar());
+		super(118, 162, createEmptyBar());
 		count = 0;
 		wantedLevel = 0;
 		percent = 0;
