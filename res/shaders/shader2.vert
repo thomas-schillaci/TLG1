@@ -21,8 +21,9 @@ float cosh(float x) {
 void main() {
     float a =  0.0020577467;
     float b = 0.0036582163;
-    float r = 1.0 - (2.0 - cosh(a*gl_Vertex.x)) * (2.0 - cosh(a*gl_Vertex.y));
-    r=1.0;
+    float r = 1.0 - (2.0 - cosh(a*(gl_Vertex.x-640))) * (2.0 - cosh(a*(gl_Vertex.y-360)));
+    r/=20;
+    r+=0.95;
     mat4 distortion;
     distortion[0] = vec4(r, 0.0, 0.0, 0.0);
     distortion[1] = vec4(0.0, r, 0.0, 0.0);
