@@ -1,4 +1,4 @@
-#version 120
+#version 130
 
 varying float v_intensity;
 varying vec3 v_bright;
