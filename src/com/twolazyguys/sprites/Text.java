@@ -6,7 +6,7 @@ public class Text extends Sprite {
 
     private String value;
 
-    private final static String TABLE = "abcdefghijklmnopqrstuvwxyz ";
+    public final static String TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!?#.,()~@:'\"-_/$ ";
 
     private static ColorSpritesheet sheet = new ColorSpritesheet(1, TABLE.length(), "abc");
     private static int dx = sheet.getSizeX() / TABLE.length();
