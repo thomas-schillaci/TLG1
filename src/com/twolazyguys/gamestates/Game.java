@@ -3,6 +3,7 @@ package com.twolazyguys.gamestates;
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.sprites.LoadingBar;
 import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -17,27 +18,31 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState implements Listener {
 
-    private Terminal terminal = new Terminal();
-
     private boolean[] keys = new boolean[65536];
 
     public final static Color BRIGHT = new Color(92, 92, 48);
     public final static Color DARK = new Color(53, 53, 28);
 
-    private final int X_PIXELS = 256, Y_PIXELS = 144;
+    private final int X_PIXELS = 320, Y_PIXELS = 180;
 
     private Colormap colormap;
 
     public Game() {
         glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
 
-        Main.addListener(terminal);
-
+        Terminal terminal = new Terminal();
+        LoadingBar lb = new LoadingBar();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
-        colormap.addSprite(terminal);
+
+        Main.addListener(terminal);
+        Main.addListener(lb);
+        Main.addListener(colormap);
+
 
         entities.add(colormap);
-        Main.addListener(colormap);
+
+        colormap.addSprite(terminal);
+        colormap.addSprite(lb);
     }
 
     @EventHandler
@@ -45,7 +50,6 @@ public class Game extends GameState implements Listener {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
 
         if (e.getAction() == GLFW_PRESS) {
-
         }
     }
 

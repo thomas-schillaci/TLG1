@@ -1,7 +1,7 @@
 package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
-import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.gamestates.Game;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -11,7 +11,12 @@ import static org.lwjgl.glfw.GLFW.*;
 
 public class Terminal extends Sprite implements Listener {
 
-    private Text input = new Text(10, 10, "");
+    private static String user = "user";
+    private static String machine = "machine";
+    private static String directory = "/home";
+
+    private static Text prefix = new Text(0, 0, user + "@" + machine + ":" + directory + "$ ");
+    private static Text input = new Text(0, 0, "");
 
     public Terminal() {
         super(
@@ -22,11 +27,7 @@ public class Terminal extends Sprite implements Listener {
     }
 
     private static float[][] genColors() {
-        return genColors(null);
-    }
-
-    private static float[][] genColors(Text input) {
-        float[][] res = new float[100][20];
+        float[][] res = new float[200][20];
 
         // outline
         for (int x = 0; x < res.length; x++) {
@@ -39,10 +40,13 @@ public class Terminal extends Sprite implements Listener {
         }
 
         // input
-        if (input != null)
-            for (int x = 0; x < input.getColors().length; x++)
-                for (int y = 0; y < input.getColors()[0].length; y++)
-                    res[2 + x][2 + y] = input.getColors()[x][y];
+        for (int i = 0; i < prefix.getColors().length; i++)
+            for (int j = 0; j < prefix.getColors()[0].length; j++)
+                res[2 + i][2 + j] = prefix.getColors()[i][j];
+
+        for (int i = 0; i < input.getColors().length; i++)
+            for (int j = 0; j < input.getColors()[0].length; j++)
+                res[2 + i + prefix.getColors().length + 2][2 + j] = input.getColors()[i][j];
 
         return res;
     }
@@ -56,9 +60,20 @@ public class Terminal extends Sprite implements Listener {
                     ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
                     Main.addListener(dwarf);
                 }
+                if (input.getValue().equals("attack")) {
+            		AttackEvent attack = new AttackEvent(0, 30);
+            		Main.callEvent(attack);
+                }
                 input.setValue("");
-            } else input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));
-            setColors(genColors(input));
+            } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
+                if (!input.getValue().equals(""))
+                    input.setValue(input.getValue().substring(0, input.getValue().length() - 1));
+            } else {
+                String key = glfwGetKeyName(e.getKey(), e.getScancode());
+                if(key != null)
+                    if(Text.TABLE.contains(key)) input.setValue(input.getValue() + key);
+            }
+            setColors(genColors());
         }
     }
 
