@@ -13,9 +13,9 @@ public class Terminal extends Sprite implements Listener {
 
     private static String user = "user";
     private static String machine = "machine";
-    private static String directory = "shome";
+    private static String directory = "/home";
 
-    private static Text prefix = new Text(0, 0, user + "a" + machine + "d" + directory + "s ");
+    private static Text prefix = new Text(0, 0, user + "@" + machine + ":" + directory + "$ ");
     private static Text input = new Text(0, 0, "");
 
     public Terminal() {
@@ -68,7 +68,11 @@ public class Terminal extends Sprite implements Listener {
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
                 if (!input.getValue().equals(""))
                     input.setValue(input.getValue().substring(0, input.getValue().length() - 1));
-            } else input.setValue(input.getValue() + glfwGetKeyName(e.getKey(), e.getScancode()));
+            } else {
+                String key = glfwGetKeyName(e.getKey(), e.getScancode());
+                if(key != null)
+                    if(Text.TABLE.contains(key)) input.setValue(input.getValue() + key);
+            }
             setColors(genColors());
         }
     }
