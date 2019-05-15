@@ -55,6 +55,7 @@ public class LoadingBar extends Sprite implements Listener {
 				percent += (sup-percent);
 				Main.callEvent(new SpriteChangedEvent(this));
 			}
+			if(percent == LENGTH-2) return;
 			if(wantedLevel == 0 && percent > 0){
 				step = (int) (DISCHARGING_SPEED * count);
 				int inf = Math.max(0,percent - step);
