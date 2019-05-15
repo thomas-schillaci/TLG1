@@ -61,8 +61,8 @@ public class Terminal extends Sprite implements Listener {
                     Main.addListener(dwarf);
                 }
                 if (input.getValue().equals("attack")) {
-                    AttackEvent attack = new AttackEvent(0, 10);
-                    Main.callEvent(attack);
+            		AttackEvent attack = new AttackEvent(0, 30);
+            		Main.callEvent(attack);
                 }
                 input.setValue("");
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {

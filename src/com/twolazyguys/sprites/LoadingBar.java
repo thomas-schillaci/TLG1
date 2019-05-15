@@ -13,12 +13,12 @@ public class LoadingBar extends Sprite implements Listener {
 	private float count;
 	private int wantedLevel;
 	private int percent;
-	private static int LENGTH = 150, WIDTH = 15;
-	private static float DOWNLOADING_SPEED = 2f;
+	private static int LENGTH = 200, WIDTH = 15;
+	private static float CHARGING_SPEED = 4f,  DISCHARGING_SPEED = 2f;
 	private static float DONE_COLOR = 1, INPROGRESS_COLOR = 0.3f;
 
 	public LoadingBar() {
-		super(105, 125, createEmptyBar());
+		super(118, 162, createEmptyBar());
 		count = 0;
 		wantedLevel = 0;
 		percent = 0;
@@ -40,8 +40,9 @@ public class LoadingBar extends Sprite implements Listener {
 	public void onGameTickEvent(GameTickEvent e) {
 		count += Main.delta;
 		if (count > 0.5f) {
+			int step;
 			if (wantedLevel > 0 && percent < wantedLevel) {
-				int step = (int) (DOWNLOADING_SPEED * count);
+				step = (int) (CHARGING_SPEED * count);
 				int sup = Math.min(percent + step, wantedLevel);
 				for (int j = 1; j < WIDTH - 1; j++) {
 					for (int i = percent + 1; i <= sup; i++) {
@@ -52,6 +53,17 @@ public class LoadingBar extends Sprite implements Listener {
 					}
 				}
 				percent += (sup-percent);
+				Main.callEvent(new SpriteChangedEvent(this));
+			}
+			if(wantedLevel == 0 && percent > 0){
+				step = (int) (DISCHARGING_SPEED * count);
+				int inf = Math.max(0,percent - step);
+				for (int j = 1; j < WIDTH - 1; j++) {
+					for (int i = inf+1; i <= percent; i++) {
+						getColors()[i][j] = 0f;
+					}
+				}
+				percent=inf;
 				Main.callEvent(new SpriteChangedEvent(this));
 			}
 			count = 0;
