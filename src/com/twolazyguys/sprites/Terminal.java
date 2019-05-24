@@ -2,10 +2,15 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.AttackEvent;
+import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.gamestates.Game;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
+
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -55,25 +60,44 @@ public class Terminal extends Sprite implements Listener {
     public void onKeyboardInputEvent(KeyboardInputEvent e) {
         if (e.getAction() == GLFW_PRESS) {
             if (e.getKey() == GLFW_KEY_ENTER) {
-                if (input.getValue().equals("dwarf")) {
-                    Dwarf dwarf = new Dwarf();
-                    ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
-                    Main.addListener(dwarf);
-                }
-                if (input.getValue().equals("attack")) {
-            		AttackEvent attack = new AttackEvent(0, 30);
-            		Main.callEvent(attack);
-                }
+                String[] split = input.getValue().split(" ");
+                String[] args = new String[split.length-1];
+                if(split.length>1) args = Arrays.copyOfRange(split, 1, args.length);
+                Main.callEvent(new CommandEvent(split[0], args));
                 input.setValue("");
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
                 if (!input.getValue().equals(""))
                     input.setValue(input.getValue().substring(0, input.getValue().length() - 1));
             } else {
                 String key = glfwGetKeyName(e.getKey(), e.getScancode());
-                if(key != null)
-                    if(Text.TABLE.contains(key)) input.setValue(input.getValue() + key);
+                if(e.getKey() == GLFW_KEY_SPACE) key = " ";
+                if(key != null) {
+                    if(Game.isKeyDown(GLFW_KEY_LEFT_SHIFT) || Game.isKeyDown(GLFW_KEY_RIGHT_SHIFT) || Toolkit.getDefaultToolkit().getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) key = key.toUpperCase();
+                    if (Text.TABLE.contains(key)) input.setValue(input.getValue() + key);
+                }
             }
             setColors(genColors());
+        }
+    }
+
+    @EventHandler(EventHandler.Priority.HIGHEST)
+    public void onCommandEvent(CommandEvent e) {
+        if(!e.isCanceled()) {
+            e.setCanceled(true);
+
+            String formatted = e.getCommand().toLowerCase();
+
+            if(formatted.equals("help")) System.out.println("Help coming soon!");
+            else if(formatted.equals("dwarf")) {
+                Dwarf dwarf = new Dwarf();
+                ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
+                Main.addListener(dwarf);
+            }
+            else if(formatted.equals("attack")) {
+                AttackEvent attack = new AttackEvent(0, 30);
+                Main.callEvent(attack);
+            }
+            else System.out.println(e.getCommand() + ": command not found.");
         }
     }
 
