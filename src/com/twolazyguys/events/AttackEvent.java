@@ -5,10 +5,12 @@ import net.colozz.engine2.events.Event;
 public class AttackEvent extends Event {
 	private float dammage;
 	private int wantedLevel;
+	private float emergencyLevel;
 	
-	public AttackEvent(float dammage, int wantedLevel) {
+	public AttackEvent(float dammage, int wantedLevel, float emergencyLevel) {
 		this.setDammage(dammage);
 		this.setWantedLevel(wantedLevel);
+		this.setEmergencyLevel(emergencyLevel);
 	}
 
 	public float getDammage() {
@@ -25,6 +27,14 @@ public class AttackEvent extends Event {
 
 	public void setWantedLevel(int wantedLevel) {
 		this.wantedLevel = wantedLevel;
+	}
+
+	public float getEmergencyLevel() {
+		return emergencyLevel;
+	}
+
+	public void setEmergencyLevel(float emergencyLevel) {
+		this.emergencyLevel = emergencyLevel;
 	}
 	
 }
