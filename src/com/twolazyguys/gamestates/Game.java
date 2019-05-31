@@ -18,7 +18,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
 
 public class Game extends GameState implements Listener {
 
-    private boolean[] keys = new boolean[65536];
+    private static boolean[] keys = new boolean[65536];
 
     public final static Color BRIGHT = new Color(92, 92, 48);
     public final static Color DARK = new Color(53, 53, 28);
@@ -53,7 +53,7 @@ public class Game extends GameState implements Listener {
         }
     }
 
-    public boolean isKeyDown(int keycode) {
+    public static boolean isKeyDown(int keycode) {
         return keys[keycode];
     }
 
