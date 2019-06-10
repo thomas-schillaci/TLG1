@@ -9,8 +9,8 @@ public class Text extends Sprite {
     public final static String TABLE = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!?#.,()~@:'\"-_/$ ";
 
     private static ColorSpritesheet sheet = new ColorSpritesheet(1, TABLE.length(), "abc");
-    private static int dx = sheet.getSizeX() / TABLE.length();
-    private static int dy = sheet.getSizeY();
+    private static int letterSizeX = sheet.getSizeX() / TABLE.length();
+    private static int letterSizeY = sheet.getSizeY();
 
     public Text(int x, int y, String value) {
         super(x, y, genColors(value));
@@ -20,12 +20,13 @@ public class Text extends Sprite {
     private static float[][] genColors(String value) {
         if (value.equals("")) return new float[0][0];
 
-        float[][] colors = new float[dx * value.length()][dy];
+        float[][] colors = new float[letterSizeX * value.length()][letterSizeY];
 
         String[] letters = value.split("");
         for (int k = 0; k < letters.length; k++) {
             float[][] letter = sheet.getSprite(0, TABLE.indexOf(letters[k])).getColors();
-            for (int i = 0; i < dx; i++) for (int j = 0; j < dy; j++) colors[k * dx + i][j] = letter[i][j];
+            for (int i = 0; i < letterSizeX; i++)
+                for (int j = 0; j < letterSizeY; j++) colors[k * letterSizeX + i][j] = letter[i][j];
         }
 
         return colors;
@@ -38,6 +39,22 @@ public class Text extends Sprite {
 
     public String getValue() {
         return value;
+    }
+
+    public int getSizeX() {
+        return getLetterSizeX() * getValue().length();
+    }
+
+    public int getSizeY() {
+        return getLetterSizeY();
+    }
+
+    public static int getLetterSizeX() {
+        return letterSizeX;
+    }
+
+    public static int getLetterSizeY() {
+        return letterSizeY;
     }
 
 }
