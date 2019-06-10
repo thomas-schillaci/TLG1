@@ -118,9 +118,6 @@ public class Terminal extends Sprite implements Listener {
                 Dwarf dwarf = new Dwarf();
                 ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
                 Main.addListener(dwarf);
-            } else if (formatted.equals("attack")) {
-                AttackEvent attack = new AttackEvent(0, 30);
-                Main.callEvent(attack);
             } else if (formatted.equals("cd")) {
                 if (event.getArgs().length > 0) {
                     String dest = event.getArgs()[0];
