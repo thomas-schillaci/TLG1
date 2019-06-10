@@ -7,6 +7,7 @@ public class CommandEvent extends Event {
     private String command;
     private String[] args;
     private boolean canceled = false;
+    private String[] output = new String[0];
 
     public CommandEvent(String command, String[] args) {
         this.command = command;
@@ -27,6 +28,18 @@ public class CommandEvent extends Event {
 
     public boolean isCanceled() {
         return canceled;
+    }
+
+    public String[] getOutput() {
+        return output;
+    }
+
+    public void setOutput(String output) {
+        setOutput(new String[]{output});
+    }
+
+    public void setOutput(String[] output) {
+        this.output = output;
     }
 
     public void setCanceled(boolean canceled) {

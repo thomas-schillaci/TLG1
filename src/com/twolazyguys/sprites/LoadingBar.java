@@ -13,8 +13,9 @@ public class LoadingBar extends Sprite implements Listener {
 	private float count;
 	private int wantedLevel;
 	private int percent;
+	private float chargingSpeed;
 	private static int LENGTH = 200, WIDTH = 15;
-	private static float CHARGING_SPEED = 4f,  DISCHARGING_SPEED = 2f;
+	private static float DISCHARGING_SPEED = 2f;
 	private static float DONE_COLOR = 1, INPROGRESS_COLOR = 0.3f;
 
 	public LoadingBar() {
@@ -42,7 +43,7 @@ public class LoadingBar extends Sprite implements Listener {
 		if (count > 0.5f) {
 			int step;
 			if (wantedLevel > 0 && percent < wantedLevel) {
-				step = (int) (CHARGING_SPEED * count);
+				step = (int) (chargingSpeed * count);
 				int sup = Math.min(percent + step, wantedLevel);
 				for (int j = 1; j < WIDTH - 1; j++) {
 					for (int i = percent + 1; i <= sup; i++) {
@@ -74,6 +75,7 @@ public class LoadingBar extends Sprite implements Listener {
 	@EventHandler
 	public void onAttackEvent(AttackEvent attack) {
 		if(wantedLevel==0) {
+			chargingSpeed = attack.getEmergencyLevel();
 			wantedLevel = Math.min(LENGTH-2,percent + attack.getWantedLevel());
 			for(int j = 1; j <= WIDTH-2; j++) {
 				for(int i = percent+1 ; i <= wantedLevel; i++) {
