@@ -17,7 +17,6 @@ public class GFile {
 
         path = path.replaceFirst(Terminal.ROOT, "");
 
-        System.out.println(path);
         if (path.startsWith("/home/")) {
             path = path.replaceFirst("/home/", "~");
             int index = 1;
