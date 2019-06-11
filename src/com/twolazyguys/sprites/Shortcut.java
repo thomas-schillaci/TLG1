@@ -55,7 +55,7 @@ public class Shortcut extends Sprite implements Listener {
         setColors(genColors());
     }
 
-    @EventHandler(EventHandler.Priority.HIGHEST)
+    @EventHandler(EventHandler.Priority.LOWEST)
     public void onCommandEvent(CommandEvent event) {
         if (!event.isCanceled()) {
             event.setCanceled(true);
