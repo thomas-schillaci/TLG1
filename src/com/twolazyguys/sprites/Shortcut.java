@@ -1,5 +1,6 @@
 package com.twolazyguys.sprites;
 
+import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -50,7 +51,32 @@ public class Shortcut extends Sprite implements Listener {
         return res;
     }
 
+    private void setShortcut(int sc, String name) {
+        if (sc >= 1 && sc <= 4) display[sc].setValue(sc + name);
+    }
 
+    @EventHandler(EventHandler.Priority.HIGHEST)
+    public void onCommandEvent(CommandEvent event) {
+        if (!event.isCanceled()) {
+            event.setCanceled(true);
 
+            String formatted = event.getCommand().toLowerCase();
+
+            if (formatted.equals("shortcut")) {
+                if (event.getArgs().length == 0) event.setOutput("Which shortcut?");
+                else {
+                    String sc = event.getArgs()[0];
+                    String name = event.getArgs()[1];
+                    switch (sc) {
+                        case "1": setShortcut(1, name); break;
+                        case "2": setShortcut(2, name); break;
+                        case "3": setShortcut(3, name); break;
+                        case "4": setShortcut(4, name); break;
+                        default: event.setOutput("Only 4 shortcuts allowed"); break;
+                    }
+                }
+            }
+        }
+    }
 
 }
