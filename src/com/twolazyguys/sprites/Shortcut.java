@@ -47,12 +47,12 @@ public class Shortcut extends Sprite implements Listener {
                 for (int y = 0; y < text.getColors()[0].length; y++)
                     res[x + text.getX()][y + text.getY()] = text.getColors()[x][y];
         }
-
         return res;
     }
 
     private void setShortcut(int sc, String name) {
-        if (sc >= 1 && sc <= 4) display[sc].setValue(sc + name);
+        if (sc >= 1 && sc <= 4) display[sc].setValue((4 - sc) + name);
+        setColors(genColors());
     }
 
     @EventHandler(EventHandler.Priority.HIGHEST)
@@ -67,13 +67,15 @@ public class Shortcut extends Sprite implements Listener {
                 else {
                     String sc = event.getArgs()[0];
                     String name = event.getArgs()[1];
+
                     switch (sc) {
-                        case "1": setShortcut(1, name); break;
-                        case "2": setShortcut(2, name); break;
-                        case "3": setShortcut(3, name); break;
-                        case "4": setShortcut(4, name); break;
+                        case "1": setShortcut(3, "." + name); break;
+                        case "2": setShortcut(2, "." + name); break;
+                        case "3": setShortcut(1, "." + name); break;
+                        case "4": setShortcut(0, "." + name); break;
                         default: event.setOutput("Only 4 shortcuts allowed"); break;
                     }
+
                 }
             }
         }
