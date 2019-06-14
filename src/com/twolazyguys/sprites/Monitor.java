@@ -1,14 +1,11 @@
 package com.twolazyguys.sprites;
 
-import com.twolazyguys.Main;
-import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.util.ColorSpritesheet;
-import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
 
 public class Monitor extends Sprite implements Listener {
 
-    private static float cpuUsage, bandwidthUsage;
+    private static float cpuUsage=1, bandwidthUsage=1;
 
     private static ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
     private static ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
@@ -22,7 +19,7 @@ public class Monitor extends Sprite implements Listener {
     private static float[][] genColors() {
         float[][] res = new float[90][90];
 
-        int cpuIndex = (int) (cpuUsage * cpuSheet.getColumns());
+        int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
         float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
         for (int x = 0; x < cpuColors.length; x++) {
             for (int y = 0; y < cpuColors[0].length; y++) {
@@ -30,7 +27,7 @@ public class Monitor extends Sprite implements Listener {
             }
         }
 
-        int bandwidthIndex = (int) (bandwidthUsage * bandwidthSheet.getColumns());
+        int bandwidthIndex = (int) (bandwidthUsage * (bandwidthSheet.getColumns() - 1));
         float[][] bandwidthColors = bandwidthSheet.getSprite(0, bandwidthIndex).getColors();
         for (int x = 0; x < bandwidthColors.length; x++) {
             for (int y = 0; y < bandwidthColors[0].length; y++) {
@@ -56,14 +53,6 @@ public class Monitor extends Sprite implements Listener {
 
     public void setBandwidthUsage(float bandwidthUsage) {
         this.bandwidthUsage = bandwidthUsage;
-    }
-
-    @EventHandler
-    public void onGameTickEvent(GameTickEvent e) {
-        count += Main.delta;
-        setBandwidthUsage((float) Math.abs(Math.cos(count)));
-        setCpuUsage((float) Math.abs(Math.sin(2 * count)));
-        setColors(genColors());
     }
 
 }
