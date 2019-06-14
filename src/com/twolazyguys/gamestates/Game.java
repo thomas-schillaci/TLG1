@@ -4,6 +4,7 @@ import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.sprites.LoadingBar;
+import com.twolazyguys.sprites.Shortcut;
 import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -32,17 +33,19 @@ public class Game extends GameState implements Listener {
 
         Terminal terminal = new Terminal();
         LoadingBar lb = new LoadingBar();
+        Shortcut shortcut = new Shortcut();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
 
         Main.addListener(terminal);
         Main.addListener(lb);
+        Main.addListener(shortcut);
         Main.addListener(colormap);
-
 
         entities.add(colormap);
 
         colormap.addSprite(terminal);
         colormap.addSprite(lb);
+        colormap.addSprite(shortcut);
     }
 
     @EventHandler
