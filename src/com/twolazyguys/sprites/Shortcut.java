@@ -58,11 +58,11 @@ public class Shortcut extends Sprite implements Listener {
     @EventHandler(EventHandler.Priority.LOWEST)
     public void onCommandEvent(CommandEvent event) {
         if (!event.isCanceled()) {
-            event.setCanceled(true);
 
             String formatted = event.getCommand().toLowerCase();
 
             if (formatted.equals("shortcut")) {
+                event.setCanceled(true);
                 if (event.getArgs().length == 0) event.setOutput("Which shortcut?");
                 else {
                     String sc = event.getArgs()[0];
