@@ -31,9 +31,12 @@ public class Terminal extends Sprite implements Listener {
     private static String userName = "root";
     private static String machine = "X";
 
+    private final static int SIZE_X = 370;
+//    private final static int SIZE_Y = 150;
+
     private final static int TEXT_OFFSET = 2;
     private final static int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
-    private final static int NUMBER_OF_ROWS = 8;
+    private final static int NUMBER_OF_ROWS = 13;
     private static Text input = new Text(TEXT_OFFSET, TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT, "$ ");
     private static Text[] display = new Text[NUMBER_OF_ROWS - 1];
     private static int inputIndex = NUMBER_OF_ROWS - 1;
@@ -58,7 +61,7 @@ public class Terminal extends Sprite implements Listener {
     }
 
     private static float[][] genColors() {
-        float[][] res = new float[200][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET];
+        float[][] res = new float[SIZE_X][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET];
 
         // background
         for (int x = 0; x < res.length; x++) for (int y = 0; y < res[0].length; y++) res[x][y] = 0.0f;
@@ -187,7 +190,7 @@ public class Terminal extends Sprite implements Listener {
 
     // PREVENT OVERFLOW
     private void pushOutput(String str) {
-        int max = 200 / Text.getLetterSizeX();
+        int max = SIZE_X / Text.getLetterSizeX();
         String res = "";
         if(str.length()>=max) {
             res = str.substring(max - 1);

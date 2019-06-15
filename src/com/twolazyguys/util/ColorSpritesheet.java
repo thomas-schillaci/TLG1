@@ -80,4 +80,11 @@ public class ColorSpritesheet {
         return colors[0].length;
     }
 
+    public int getRows() {
+        return rows;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
 }

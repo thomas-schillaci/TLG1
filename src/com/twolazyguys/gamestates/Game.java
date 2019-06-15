@@ -5,6 +5,7 @@ import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.sprites.Battalion;
 import com.twolazyguys.sprites.LoadingBar;
+import com.twolazyguys.sprites.Monitor;
 import com.twolazyguys.sprites.Shortcut;
 import com.twolazyguys.sprites.Terminal;
 import net.colozz.engine2.events.EventHandler;
@@ -35,6 +36,7 @@ public class Game extends GameState implements Listener {
         Terminal terminal = new Terminal();
         LoadingBar lb = new LoadingBar();
         Shortcut shortcut = new Shortcut();
+        Monitor monitor = new Monitor();
         Battalion battalion = new Battalion();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
 
@@ -43,13 +45,14 @@ public class Game extends GameState implements Listener {
         Main.addListener(shortcut);
         Main.addListener(battalion);
         Main.addListener(colormap);
+        Main.addListener(monitor);
 
         entities.add(colormap);
 
         colormap.addSprite(terminal);
         colormap.addSprite(lb);
         colormap.addSprite(shortcut);
-        colormap.addSprite(battalion);
+        colormap.addSprite(monitor);
     }
 
     @EventHandler

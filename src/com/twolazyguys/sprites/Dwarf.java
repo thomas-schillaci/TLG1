@@ -2,6 +2,7 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
@@ -14,8 +15,8 @@ public class Dwarf extends Sprite implements Listener {
 
     private static ColorSpritesheet sheet = new ColorSpritesheet(3, 2, "dwarfsheet");
 
-    public Dwarf() {
-        super(50, 100, sheet.getSprite(0, 0).getColors());
+    public Dwarf(int x, int y) {
+        super(x, y, sheet.getSprite(0, 0).getColors());
 
         sprites = new Sprite[]{sheet.getSprite(0, 0), sheet.getSprite(0, 1)};
     }
