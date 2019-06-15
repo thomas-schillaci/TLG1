@@ -3,6 +3,7 @@ package com.twolazyguys.gamestates;
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.sprites.Battalion;
 import com.twolazyguys.sprites.LoadingBar;
 import com.twolazyguys.sprites.Monitor;
 import com.twolazyguys.sprites.Shortcut;
@@ -36,12 +37,13 @@ public class Game extends GameState implements Listener {
         LoadingBar lb = new LoadingBar();
         Shortcut shortcut = new Shortcut();
         Monitor monitor = new Monitor();
-
+        Battalion battalion = new Battalion();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
 
         Main.addListener(terminal);
         Main.addListener(lb);
         Main.addListener(shortcut);
+        Main.addListener(battalion);
         Main.addListener(colormap);
         Main.addListener(monitor);
 
