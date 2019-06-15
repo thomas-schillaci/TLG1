@@ -3,6 +3,7 @@ package com.twolazyguys.gamestates;
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.sprites.Battalion;
 import com.twolazyguys.sprites.LoadingBar;
 import com.twolazyguys.sprites.Shortcut;
 import com.twolazyguys.sprites.Terminal;
@@ -24,7 +25,7 @@ public class Game extends GameState implements Listener {
     public final static Color BRIGHT = new Color(92, 92, 48);
     public final static Color DARK = new Color(53, 53, 28);
 
-    private final int X_PIXELS = 320, Y_PIXELS = 180;
+    private final int X_PIXELS = 512, Y_PIXELS = 288;
 
     private Colormap colormap;
 
@@ -34,11 +35,13 @@ public class Game extends GameState implements Listener {
         Terminal terminal = new Terminal();
         LoadingBar lb = new LoadingBar();
         Shortcut shortcut = new Shortcut();
+        Battalion battalion = new Battalion();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
 
         Main.addListener(terminal);
         Main.addListener(lb);
         Main.addListener(shortcut);
+        Main.addListener(battalion);
         Main.addListener(colormap);
 
         entities.add(colormap);
@@ -46,6 +49,7 @@ public class Game extends GameState implements Listener {
         colormap.addSprite(terminal);
         colormap.addSprite(lb);
         colormap.addSprite(shortcut);
+        colormap.addSprite(battalion);
     }
 
     @EventHandler
