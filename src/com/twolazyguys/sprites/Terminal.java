@@ -165,12 +165,7 @@ public class Terminal extends Sprite implements Listener {
             String formatted = event.getCommand().toLowerCase();
 
             if (formatted.equals("help")) event.setOutput("Help coming soon!");
-            else if (formatted.equals("dwarf")) {
-                Main.callEvent(new DwarfEvent());
-//                Dwarf dwarf = new Dwarf();
-//                ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
-//                Main.addListener(dwarf);
-            } else if (formatted.equals("cd")) {
+            else if (formatted.equals("cd")) {
                 if (event.getArgs().length > 0) {
                     String dest = event.getArgs()[0];
                     if (dest.equals("..")) {
@@ -251,7 +246,7 @@ public class Terminal extends Sprite implements Listener {
         return input.getValue().substring(input.getValue().indexOf("$ ") + 2);
     }
 
-    private static void setUserInput(String userInput) {
+    private void setUserInput(String userInput) {
         String prefix = getPrefix();
         input.setValue(prefix + userInput);
     }
