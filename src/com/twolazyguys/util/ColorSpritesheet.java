@@ -60,7 +60,7 @@ public class ColorSpritesheet {
             for (int x = 0; x < colors.length; x++) {
                 for (int y = 0; y < colors[0].length; y++) {
                     if (binary) colors[x][y] += 1;
-                    else colors[x][y] = 1 + colors[x][y] / 50;
+                    else colors[x][y] = colors[x][y] == 0.0f ? 1.0f : -(colors[x][y] + 1) / 255;
                 }
             }
 

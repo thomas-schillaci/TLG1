@@ -5,12 +5,10 @@ import net.colozz.engine2.events.Listener;
 
 public class Monitor extends Sprite implements Listener {
 
-    private static float cpuUsage=1, bandwidthUsage=1;
+    private static float cpuUsage = 0.5f, bandwidthUsage = 1;
 
     private static ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
     private static ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
-
-    private float count;
 
     public Monitor() {
         super(390, 20, genColors());

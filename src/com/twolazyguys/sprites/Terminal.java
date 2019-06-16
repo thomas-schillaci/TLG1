@@ -2,6 +2,7 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
+import com.twolazyguys.events.DwarfEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.GFile;
@@ -31,7 +32,7 @@ public class Terminal extends Sprite implements Listener {
     private static String machine = "X";
 
     private final static int SIZE_X = 370;
-//    private final static int SIZE_Y = 150;
+    private final static int SIZE_Y = 150;
 
     private final static int TEXT_OFFSET = 2;
     private final static int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
@@ -40,9 +41,10 @@ public class Terminal extends Sprite implements Listener {
     private static Text[] display = new Text[NUMBER_OF_ROWS - 1];
     private static int inputIndex = NUMBER_OF_ROWS - 1;
 
-    private static int cursorIndex; // TODO
+    private static int cursorIndex;
 
-    private static float count;
+    private static float displayLagCount;
+    private static float cursorCount;
 
     static {
         for (int i = 0; i < display.length; i++)
@@ -62,9 +64,6 @@ public class Terminal extends Sprite implements Listener {
     private static float[][] genColors() {
         float[][] res = new float[SIZE_X][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET];
 
-        // background
-        for (int x = 0; x < res.length; x++) for (int y = 0; y < res[0].length; y++) res[x][y] = 0.0f;
-
         // outline
         for (int x = 0; x < res.length; x++) {
             res[x][0] = 0.3f;
@@ -81,17 +80,28 @@ public class Terminal extends Sprite implements Listener {
                     res[x + text.getX()][y + text.getY()] = text.getColors()[x][y];
         }
 
-        for (int x = 0; x < input.getColors().length; x++)
-            for (int y = 0; y < input.getColors()[0].length; y++)
-                res[x + input.getX()][y + input.getY()] = input.getColors()[x][y];
+        setUserInput(getUserInput() + " ");
+
+        for (int x = 0; x < input.getColors().length; x++) {
+            for (int y = 0; y < input.getColors()[0].length; y++) {
+                int letterIndex = x * input.getValue().length() / input.getColors().length;
+                letterIndex -= getPrefix().length();
+                res[x + input.getX()][y + input.getY()] = (letterIndex == cursorIndex && cursorCount < 0.75 ? 1 - input.getColors()[x][y] : input.getColors()[x][y]);
+            }
+        }
+
+        setUserInput(getUserInput().substring(0, getUserInput().length() - 1));
 
         return res;
     }
 
     @EventHandler
     public void onGameTickEvent(GameTickEvent e) {
-        count += Main.delta;
-        if (count > 0) setColors(genColors());
+        cursorCount += Main.delta;
+        if (cursorCount > 1.5) cursorCount = 0;
+
+        displayLagCount += Main.delta;
+        if (displayLagCount > 0) setColors(genColors());
     }
 
     @EventHandler
@@ -108,13 +118,26 @@ public class Terminal extends Sprite implements Listener {
                 pushOutput(input.getValue());
                 for (String str : output) pushOutput(str);
 
-                count = -0.15f;
+                displayLagCount = -0.15f;
 
                 setUserInput("");
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
-                if (!getUserInput().equals("")) {
-                    setUserInput(getUserInput().substring(0, getUserInput().length() - 1));
+                if (cursorIndex > 0) {
+                    setUserInput(getUserInput().substring(0, cursorIndex - 1) + getUserInput().substring(cursorIndex));
+                    cursorIndex--;
+                    cursorIndex = Math.max(0, cursorIndex);
                 }
+            } else if (e.getKey() == GLFW_KEY_DELETE) {
+                if (cursorIndex < getUserInput().length())
+                    setUserInput(getUserInput().substring(0, cursorIndex) + getUserInput().substring(cursorIndex + 1));
+            } else if (e.getKey() == GLFW_KEY_LEFT) {
+                cursorCount = 0;
+                cursorIndex--;
+                cursorIndex = Math.max(0, cursorIndex);
+            } else if (e.getKey() == GLFW_KEY_RIGHT) {
+                cursorCount = 0;
+                cursorIndex++;
+                cursorIndex = Math.max(0, Math.min(cursorIndex, getUserInput().length()));
             } else if (Game.isKeyDown(GLFW_KEY_LEFT_CONTROL) || Game.isKeyDown(GLFW_KEY_RIGHT_CONTROL)) {
                 if (e.getKey() == GLFW_KEY_L) {
                     clear();
@@ -129,7 +152,9 @@ public class Terminal extends Sprite implements Listener {
     public void onCharInputEvent(CharInputEvent e) {
         if (e.getCharacterCallback() < 32) return;
         String c = "" + (char) e.getCharacterCallback();
-        if (Text.TABLE.contains(c)) setUserInput(getUserInput() + c);
+        if (Text.TABLE.contains(c))
+            setUserInput(getUserInput().substring(0, cursorIndex) + c + getUserInput().substring(cursorIndex));
+        cursorIndex++;
     }
 
     @EventHandler(EventHandler.Priority.HIGHEST)
@@ -163,7 +188,6 @@ public class Terminal extends Sprite implements Listener {
             } else if (formatted.equals("cat")) {
                 if (event.getArgs().length > 0) {
                     File file = new File(ROOT + "/" + currentDirectory.getPath().substring(1) + "/" + event.getArgs()[0]);
-                    System.out.println(currentDirectory.getPath().replaceFirst("/", ROOT) + event.getArgs()[0]);
                     if (file.isFile()) {
                         try {
                             BufferedReader br = new BufferedReader(new FileReader(file));
@@ -186,7 +210,7 @@ public class Terminal extends Sprite implements Listener {
     private void pushOutput(String str) {
         int max = SIZE_X / Text.getLetterSizeX();
         String res = "";
-        if(str.length()>=max) {
+        if (str.length() >= max) {
             res = str.substring(max - 1);
             str = str.substring(0, max - 1);
         }
@@ -201,7 +225,7 @@ public class Terminal extends Sprite implements Listener {
         }
         display[inputIndex].setValue(str);
 
-        if(!res.equals("")) pushOutput(res);
+        if (!res.equals("")) pushOutput(res);
     }
 
     private void changeDirectory(GFile newDirectory) {
@@ -209,16 +233,16 @@ public class Terminal extends Sprite implements Listener {
         setPrefix();
     }
 
-    private String getPrefix() {
+    private static String getPrefix() {
         return input.getValue().substring(0, input.getValue().indexOf("$ ") + 2);
     }
 
-    private void setPrefix() {
+    private static void setPrefix() {
         String userInput = getUserInput();
         input.setValue(userName + "@" + machine + ":" + currentDirectory.getPath() + "$ " + userInput);
     }
 
-    private String getUserInput() {
+    private static String getUserInput() {
         return input.getValue().substring(input.getValue().indexOf("$ ") + 2);
     }
 
