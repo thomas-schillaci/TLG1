@@ -2,7 +2,6 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
-import com.twolazyguys.events.DwarfEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.GFile;
@@ -141,12 +140,7 @@ public class Terminal extends Sprite implements Listener {
             String formatted = event.getCommand().toLowerCase();
 
             if (formatted.equals("help")) event.setOutput("Help coming soon!");
-            else if (formatted.equals("dwarf")) {
-            	Main.callEvent(new DwarfEvent());
-//                Dwarf dwarf = new Dwarf();
-//                ((Game) Main.getGameState()).getColormap().addSprite(dwarf);
-//                Main.addListener(dwarf);
-            } else if (formatted.equals("cd")) {
+            else if (formatted.equals("cd")) {
                 if (event.getArgs().length > 0) {
                     String dest = event.getArgs()[0];
                     if (dest.equals("..")) {
