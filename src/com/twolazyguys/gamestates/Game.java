@@ -3,11 +3,7 @@ package com.twolazyguys.gamestates;
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
 import com.twolazyguys.events.GameTickEvent;
-import com.twolazyguys.sprites.Battalion;
-import com.twolazyguys.sprites.LoadingBar;
-import com.twolazyguys.sprites.Monitor;
-import com.twolazyguys.sprites.Shortcut;
-import com.twolazyguys.sprites.Terminal;
+import com.twolazyguys.sprites.*;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.Listener;
@@ -26,7 +22,7 @@ public class Game extends GameState implements Listener {
     public final static Color BRIGHT = new Color(92, 92, 48);
     public final static Color DARK = new Color(53, 53, 28);
 
-    private final int X_PIXELS = 512, Y_PIXELS = 288;
+    public final static int X_PIXELS = 512, Y_PIXELS = 288;
 
     private Colormap colormap;
 
@@ -36,23 +32,23 @@ public class Game extends GameState implements Listener {
         Terminal terminal = new Terminal();
         LoadingBar lb = new LoadingBar();
         Shortcut shortcut = new Shortcut();
-        Monitor monitor = new Monitor();
         Battalion battalion = new Battalion();
+        RightPanel rightPanel = new RightPanel();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
 
         Main.addListener(terminal);
         Main.addListener(lb);
         Main.addListener(shortcut);
         Main.addListener(battalion);
+        Main.addListener(rightPanel);
         Main.addListener(colormap);
-        Main.addListener(monitor);
 
         entities.add(colormap);
 
         colormap.addSprite(terminal);
         colormap.addSprite(lb);
         colormap.addSprite(shortcut);
-        colormap.addSprite(monitor);
+        colormap.addSprite(rightPanel);
     }
 
     @EventHandler

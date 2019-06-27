@@ -2,7 +2,6 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
-import com.twolazyguys.events.DwarfEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.GFile;
@@ -24,60 +23,57 @@ public class Terminal extends Sprite implements Listener {
 
     public final static String ROOT = "res";
 
-    private static GFile root = new GFile(ROOT);
+    private GFile root = new GFile(ROOT);
 
-    private static GFile currentDirectory = root;
+    private GFile currentDirectory = root;
 
-    private static String userName = "root";
-    private static String machine = "X";
+    private String userName = "root";
+    private String machine = "X";
 
     private final static int SIZE_X = 370;
     private final static int SIZE_Y = 150;
 
-    private final static int TEXT_OFFSET = 2;
-    private final static int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
-    private final static int NUMBER_OF_ROWS = 13;
-    private static Text input = new Text(TEXT_OFFSET, TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT, "$ ");
-    private static Text[] display = new Text[NUMBER_OF_ROWS - 1];
-    private static int inputIndex = NUMBER_OF_ROWS - 1;
+    private final int TEXT_OFFSET = 2;
+    private final int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
+    private final int NUMBER_OF_ROWS = 13;
 
-    private static int cursorIndex;
+    private Text input;
+    private Text[] display = new Text[NUMBER_OF_ROWS - 1];
+    private int inputIndex = NUMBER_OF_ROWS - 1;
 
-    private static float displayLagCount;
-    private static float cursorCount;
+    private int cursorIndex;
 
-    static {
-        for (int i = 0; i < display.length; i++)
-            display[i] = new Text(TEXT_OFFSET, (i + 1) * LINE_HEIGHT + TEXT_OFFSET, "");
-    }
+    private float displayLagCount;
+    private float cursorCount;
 
     public Terminal() {
         super(
                 10,
-                10,
-                genColors()
+                10
         );
-        setPrefix();
-        setColors(genColors());
+
+        input = new Text(TEXT_OFFSET, TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT, "$ ");
+        for (int i = 0; i < display.length; i++)
+            display[i] = new Text(TEXT_OFFSET, (i + 1) * LINE_HEIGHT + TEXT_OFFSET, "");
+
+        genColors();
     }
 
-    private static float[][] genColors() {
-        float[][] res = new float[SIZE_X][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET];
+    private void genColors() {
+        this.setColors(new float[SIZE_X][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET]);
 
         // outline
-        for (int x = 0; x < res.length; x++) {
-            res[x][0] = 0.3f;
-            res[x][res[0].length - 1] = 0.3f;
+        for (int x = 0; x < this.getColors().length; x++) {
+            this.getColors()[x][0] = 0.3f;
+            this.getColors()[x][this.getColors()[0].length - 1] = 0.3f;
         }
-        for (int y = 0; y < res[0].length; y++) {
-            res[0][y] = 0.3f;
-            res[res.length - 1][y] = 0.3f;
+        for (int y = 0; y < this.getColors()[0].length; y++) {
+            this.getColors()[0][y] = 0.3f;
+            this.getColors()[this.getColors().length - 1][y] = 0.3f;
         }
 
         for (Text text : display) {
-            for (int x = 0; x < text.getColors().length; x++)
-                for (int y = 0; y < text.getColors()[0].length; y++)
-                    res[x + text.getX()][y + text.getY()] = text.getColors()[x][y];
+            storeColors(text);
         }
 
         setUserInput(getUserInput() + " ");
@@ -86,13 +82,11 @@ public class Terminal extends Sprite implements Listener {
             for (int y = 0; y < input.getColors()[0].length; y++) {
                 int letterIndex = x * input.getValue().length() / input.getColors().length;
                 letterIndex -= getPrefix().length();
-                res[x + input.getX()][y + input.getY()] = (letterIndex == cursorIndex && cursorCount < 0.75 ? 1 - input.getColors()[x][y] : input.getColors()[x][y]);
+                this.getColors()[x + input.getX()][y + input.getY()] = (letterIndex == cursorIndex && cursorCount < 0.75 ? 1 - input.getColors()[x][y] : input.getColors()[x][y]);
             }
         }
 
         setUserInput(getUserInput().substring(0, getUserInput().length() - 1));
-
-        return res;
     }
 
     @EventHandler
@@ -101,7 +95,7 @@ public class Terminal extends Sprite implements Listener {
         if (cursorCount > 1.5) cursorCount = 0;
 
         displayLagCount += Main.delta;
-        if (displayLagCount > 0) setColors(genColors());
+        if (displayLagCount > 0) genColors();
     }
 
     @EventHandler
@@ -116,11 +110,12 @@ public class Terminal extends Sprite implements Listener {
                 String[] output = event.getOutput();
 
                 pushOutput(input.getValue());
-                for (String str : output) pushOutput(str);
+                pushOutput(output);
 
                 displayLagCount = -0.15f;
 
                 setUserInput("");
+                cursorIndex = 0;
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
                 if (cursorIndex > 0) {
                     setUserInput(getUserInput().substring(0, cursorIndex - 1) + getUserInput().substring(cursorIndex));
@@ -152,9 +147,10 @@ public class Terminal extends Sprite implements Listener {
     public void onCharInputEvent(CharInputEvent e) {
         if (e.getCharacterCallback() < 32) return;
         String c = "" + (char) e.getCharacterCallback();
-        if (Text.TABLE.contains(c))
+        if (Text.TABLE.contains(c)) {
             setUserInput(getUserInput().substring(0, cursorIndex) + c + getUserInput().substring(cursorIndex));
-        cursorIndex++;
+            cursorIndex++;
+        }
     }
 
     @EventHandler(EventHandler.Priority.HIGHEST)
@@ -206,7 +202,14 @@ public class Terminal extends Sprite implements Listener {
         }
     }
 
-    // PREVENT OVERFLOW
+    // TODO deal with large arrays
+    private void pushOutput(String[] str) {
+        for (String s : str) {
+            pushOutput(s);
+        }
+    }
+
+    // TODO PREVENT OVERFLOW
     private void pushOutput(String str) {
         int max = SIZE_X / Text.getLetterSizeX();
         String res = "";
@@ -233,16 +236,16 @@ public class Terminal extends Sprite implements Listener {
         setPrefix();
     }
 
-    private static String getPrefix() {
+    private String getPrefix() {
         return input.getValue().substring(0, input.getValue().indexOf("$ ") + 2);
     }
 
-    private static void setPrefix() {
+    private void setPrefix() {
         String userInput = getUserInput();
         input.setValue(userName + "@" + machine + ":" + currentDirectory.getPath() + "$ " + userInput);
     }
 
-    private static String getUserInput() {
+    private String getUserInput() {
         return input.getValue().substring(input.getValue().indexOf("$ ") + 2);
     }
 
@@ -255,7 +258,7 @@ public class Terminal extends Sprite implements Listener {
         for (Text text : display) text.setValue("");
         inputIndex = NUMBER_OF_ROWS - 1;
         input.setY(TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT);
-        setColors(genColors());
+        genColors();
     }
 
 }

@@ -10,8 +10,8 @@ public class Monitor extends Sprite implements Listener {
     private static ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
     private static ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
 
-    public Monitor() {
-        super(390, 20, genColors());
+    public Monitor(int x, int y) {
+        super(x, y, genColors());
     }
 
     private static float[][] genColors() {
