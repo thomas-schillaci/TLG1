@@ -2,7 +2,6 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.GameTickEvent;
-import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;

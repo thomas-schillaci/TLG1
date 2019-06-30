@@ -24,12 +24,12 @@ public class Battalion extends Sprite implements Listener{
 	@EventHandler
     public void onCommandEvent(CommandEvent event) {
 		if (!event.isCanceled()) {
-            event.setCanceled(true);
 
-            String formatted = event.getCommand().toLowerCase();
+			String formatted = event.getCommand().toLowerCase();
 
-            if (formatted.equals("dwarf")) {
-            	if(army.size()==5) {
+			if (formatted.equals("dwarf")) {
+				event.setCanceled(true);
+				if(army.size()==5) {
         			for(Dwarf dwarf: army) {
         				dwarf.setY(206);
         			}

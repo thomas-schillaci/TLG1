@@ -11,7 +11,6 @@ import java.lang.reflect.WildcardType;
 
 public class Shortcut extends Sprite implements Listener {
 
-    private Sprite[] sprites;
     private static int LENGTH = 90, WIDTH = 60;
     private static int NUMBER_OF_ROWS = 4;
     private static Text[] display = new Text[NUMBER_OF_ROWS];

@@ -52,15 +52,25 @@ public class ColorSpritesheet {
                 for (int j = 0; j < width; j++) {
                     float b = buffer.get();
                     colors[j][height - i - 1] = b;
-                    if ((int) Math.abs(b) != 0 && (int) Math.abs(b) != 1) binary = false;
+                    if (b != 0 && b != -1) binary = false;
                 }
             }
 
-            // TODO FIXME
             for (int x = 0; x < colors.length; x++) {
                 for (int y = 0; y < colors[0].length; y++) {
-                    if (binary) colors[x][y] += 1;
-                    else colors[x][y] = colors[x][y] == 0.0f ? 1.0f : -(colors[x][y] + 1) / 255;
+                    if (binary) {
+                        colors[x][y] += 1;
+                    } else {
+                        if (colors[x][y] == 0) {
+                            colors[x][y] = 1;
+                        } else {
+                            if (colors[x][y] < 0) {
+                                colors[x][y] = -colors[x][y] / 255;
+                            } else {
+                                colors[x][y] = 1 - (colors[x][y]) / 255;
+                            }
+                        }
+                    }
                 }
             }
 

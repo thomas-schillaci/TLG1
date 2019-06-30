@@ -1,27 +1,33 @@
 package com.twolazyguys.sprites;
 
 import com.twolazyguys.util.ColorSpritesheet;
-import net.colozz.engine2.events.Listener;
 
-public class Monitor extends Sprite implements Listener {
+public class Monitor extends Sprite {
 
-    private static float cpuUsage = 0.5f, bandwidthUsage = 1;
+    private float cpuUsage = 0.5f, bandwidthUsage = 1;
+    private boolean changed = false;
 
-    private static ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
-    private static ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
+    private ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
+    private ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
 
-    public Monitor() {
-        super(390, 20, genColors());
+    public Monitor(int x, int y) {
+        super(x, y);
     }
 
-    private static float[][] genColors() {
+    @Override
+    public float[][] getColors() {
+        changed = false;
+        return genColors();
+    }
+
+    private float[][] genColors() {
         float[][] res = new float[90][90];
 
         int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
         float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
         for (int x = 0; x < cpuColors.length; x++) {
             for (int y = 0; y < cpuColors[0].length; y++) {
-                res[x][y] = cpuColors[x][y];
+                res[x+45][y] = cpuColors[x][y];
             }
         }
 
@@ -29,7 +35,7 @@ public class Monitor extends Sprite implements Listener {
         float[][] bandwidthColors = bandwidthSheet.getSprite(0, bandwidthIndex).getColors();
         for (int x = 0; x < bandwidthColors.length; x++) {
             for (int y = 0; y < bandwidthColors[0].length; y++) {
-                res[x][y + 45] = bandwidthColors[x][y];
+                res[x+45][y + 45] = bandwidthColors[x][y];
             }
         }
 
@@ -41,8 +47,10 @@ public class Monitor extends Sprite implements Listener {
     }
 
     public void setCpuUsage(float cpuUsage) {
-        this.cpuUsage = cpuUsage;
-
+        if (this.cpuUsage != cpuUsage) {
+            this.cpuUsage = cpuUsage;
+            changed = true;
+        }
     }
 
     public float getBandwidthUsage() {
@@ -50,7 +58,13 @@ public class Monitor extends Sprite implements Listener {
     }
 
     public void setBandwidthUsage(float bandwidthUsage) {
-        this.bandwidthUsage = bandwidthUsage;
+        if (this.bandwidthUsage != bandwidthUsage) {
+            this.bandwidthUsage = bandwidthUsage;
+            changed = true;
+        }
     }
 
+    public boolean hasChanged() {
+        return changed;
+    }
 }

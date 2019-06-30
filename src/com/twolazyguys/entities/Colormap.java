@@ -65,12 +65,7 @@ public class Colormap extends Entity implements Listener {
     private void updateData() {
         float[][] colors = new float[sizeX][sizeY];
 
-        for (Sprite sprite : sprites) {
-            float[][] spriteColors = sprite.getColors();
-            for (int i = 0; i < spriteColors.length; i++)
-                for (int j = 0; j < spriteColors[0].length; j++)
-                    colors[sprite.getX() + i][sprite.getY() + j] = spriteColors[i][j];
-        }
+        for (Sprite sprite : sprites) Sprite.storeColors(sprite, colors);
 
         float[] data = genData(sizeX, sizeY, colors);
 
