@@ -2,7 +2,6 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.GameTickEvent;
-import com.twolazyguys.events.NotificationEvent;
 import com.twolazyguys.gamestates.Game;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
@@ -14,19 +13,25 @@ import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 public class RightPanel extends Sprite implements Listener {
 
     private Bell bell = new Bell(90, 200);
-    private Monitor monitor = new Monitor(0, 0);
-    private NotificationManager notificationManager = new NotificationManager(0, 0);
-    private boolean mainMode = true;
+    private Monitor monitor = new Monitor(0, 20);
+    private NotificationManager notificationManager = new NotificationManager(10, 100);
+    private boolean mainMode = true; // mainMode is the monitor
 
     public RightPanel() {
         super(300, 0);
+        Main.addListener(bell);
+        Main.addListener(notificationManager);
+        genColors();
     }
 
     private void genColors() {
-        this.setColors(new float[200][220]);
+        float[][] res = new float[200][220];
 
-        storeColors(bell);
-        storeColors(mainMode?monitor:notificationManager);
+        storeColors(bell, res);
+        storeColors(mainMode ? monitor : notificationManager, res);
+        storeColors(mainMode ? notificationManager : monitor, new float[200][220]);
+
+        setColors(res);
     }
 
     @EventHandler
@@ -38,20 +43,20 @@ public class RightPanel extends Sprite implements Listener {
             double x = xList[0] / Main.width * Game.X_PIXELS;
             double y = Game.Y_PIXELS - (yList[0] / Main.height * Game.Y_PIXELS);
 
-            if (x >= getX() && x <= getX() + getSizeX() && y >= getY() && y <= getY() + getSizeY()) {
+            if (x >= bell.getX() + getX() && x <= bell.getX() + getX() + bell.getSizeX() && y >= getY() + bell.getY() && y <= getY() + bell.getY() + bell.getSizeY()) {
                 mainMode = !mainMode;
+                bell.setRinging(false);
+                genColors();
             }
         }
     }
 
-
-    @EventHandler
-    public void onNotificationEvent(NotificationEvent e) {
-    }
-
     @EventHandler
     public void onGameTickEvent(GameTickEvent e) {
-        genColors();
+        if (notificationManager.hasChanged() || monitor.hasChanged() || bell.hasChanged()) {
+            if (notificationManager.hasChanged() && mainMode) bell.setRinging(true);
+            genColors();
+        }
     }
 
 }

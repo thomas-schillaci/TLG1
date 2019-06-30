@@ -54,9 +54,6 @@ public class Game extends GameState implements Listener {
     @EventHandler
     public void onKeyboardInputEvent(KeyboardInputEvent e) {
         keys[e.getKey()] = e.getAction() != GLFW_RELEASE;
-
-        if (e.getAction() == GLFW_PRESS) {
-        }
     }
 
     public static boolean isKeyDown(int keycode) {

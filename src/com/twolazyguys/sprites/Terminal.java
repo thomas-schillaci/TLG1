@@ -3,6 +3,7 @@ package com.twolazyguys.sprites;
 import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.events.NotificationEvent;
 import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.GFile;
 import net.colozz.engine2.events.CharInputEvent;
@@ -12,7 +13,8 @@ import net.colozz.engine2.events.Listener;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -21,7 +23,7 @@ import static org.lwjgl.glfw.GLFW.*;
 public class Terminal extends Sprite implements Listener {
 
 
-    public final static String ROOT = "res";
+    public static final String ROOT = "res";
 
     private GFile root = new GFile(ROOT);
 
@@ -30,21 +32,22 @@ public class Terminal extends Sprite implements Listener {
     private String userName = "root";
     private String machine = "X";
 
-    private final static int SIZE_X = 370;
-    private final static int SIZE_Y = 150;
-
-    private final int TEXT_OFFSET = 2;
-    private final int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
-    private final int NUMBER_OF_ROWS = 13;
+    private static final int ROWS = 16;
+    private static final int COLUMNS = 61;
+    private static final int TEXT_OFFSET = 2;
 
     private Text input;
-    private Text[] display = new Text[NUMBER_OF_ROWS - 1];
-    private int inputIndex = NUMBER_OF_ROWS - 1;
+
+    private LogDisplay display;
 
     private int cursorIndex;
 
     private float displayLagCount;
     private float cursorCount;
+
+    private ArrayList<String> lastCommands = new ArrayList<>();
+    private int lastCommandsIndex = -1;
+    private String lastPendingInput;
 
     public Terminal() {
         super(
@@ -52,41 +55,42 @@ public class Terminal extends Sprite implements Listener {
                 10
         );
 
-        input = new Text(TEXT_OFFSET, TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT, "$ ");
-        for (int i = 0; i < display.length; i++)
-            display[i] = new Text(TEXT_OFFSET, (i + 1) * LINE_HEIGHT + TEXT_OFFSET, "");
+        display = new LogDisplay(TEXT_OFFSET, TEXT_OFFSET + Text.getLetterSizeY(), ROWS - 1, COLUMNS);
+        input = new Text(TEXT_OFFSET, TEXT_OFFSET + (ROWS - 1) * Text.getLetterSizeY(), "$ ");
+        setPrefix();
 
         genColors();
     }
 
     private void genColors() {
-        this.setColors(new float[SIZE_X][NUMBER_OF_ROWS * LINE_HEIGHT + TEXT_OFFSET]);
+        float[][] res = new float[2 * TEXT_OFFSET + COLUMNS * Text.getLetterSizeX()][ROWS * Text.getLetterSizeY() + 2 * TEXT_OFFSET];
 
         // outline
-        for (int x = 0; x < this.getColors().length; x++) {
-            this.getColors()[x][0] = 0.3f;
-            this.getColors()[x][this.getColors()[0].length - 1] = 0.3f;
+        for (int x = 0; x < res.length; x++) {
+            res[x][0] = 0.3f;
+            res[x][res[0].length - 1] = 0.3f;
         }
-        for (int y = 0; y < this.getColors()[0].length; y++) {
-            this.getColors()[0][y] = 0.3f;
-            this.getColors()[this.getColors().length - 1][y] = 0.3f;
+        for (int y = 0; y < res[0].length; y++) {
+            res[0][y] = 0.3f;
+            res[res.length - 1][y] = 0.3f;
         }
 
-        for (Text text : display) {
-            storeColors(text);
-        }
+        storeColors(display, res);
 
         setUserInput(getUserInput() + " ");
 
-        for (int x = 0; x < input.getColors().length; x++) {
-            for (int y = 0; y < input.getColors()[0].length; y++) {
-                int letterIndex = x * input.getValue().length() / input.getColors().length;
+        float[][] colors = input.getColors();
+        for (int x = 0; x < colors.length; x++) {
+            for (int y = 0; y < colors[0].length; y++) {
+                int letterIndex = x * input.getValue().length() / colors.length;
                 letterIndex -= getPrefix().length();
-                this.getColors()[x + input.getX()][y + input.getY()] = (letterIndex == cursorIndex && cursorCount < 0.75 ? 1 - input.getColors()[x][y] : input.getColors()[x][y]);
+                res[x + input.getX()][y + input.getY()] = (letterIndex == cursorIndex && cursorCount < 0.75 ? 1 - colors[x][y] : colors[x][y]);
             }
         }
 
         setUserInput(getUserInput().substring(0, getUserInput().length() - 1));
+
+        setColors(res);
     }
 
     @EventHandler
@@ -95,26 +99,32 @@ public class Terminal extends Sprite implements Listener {
         if (cursorCount > 1.5) cursorCount = 0;
 
         displayLagCount += Main.delta;
-        if (displayLagCount > 0) genColors();
+        if (displayLagCount > 0) genColors(); // à améliorer si on commence à avoir des baisses de fps
     }
 
     @EventHandler
     public void onKeyboardInputEvent(KeyboardInputEvent e) {
-        if (e.getAction() == GLFW_PRESS) {
+        if (e.getAction() == GLFW_PRESS || e.getAction() == GLFW_REPEAT) {
             if (e.getKey() == GLFW_KEY_ENTER) {
                 String[] split = getUserInput().split(" ");
                 String[] args = Arrays.copyOfRange(split, 1, split.length);
+
+                String in = input.getValue();
 
                 CommandEvent event = new CommandEvent(split[0], args);
                 Main.callEvent(event);
                 String[] output = event.getOutput();
 
-                pushOutput(input.getValue());
-                pushOutput(output);
+                display.pushOutput(in);
+                display.pushOutput(output);
+                input.setY((ROWS - 1 - display.getFilledRows()) * Text.getLetterSizeY() + TEXT_OFFSET);
 
                 displayLagCount = -0.15f;
 
+                if (e.getAction() == GLFW_REPEAT) genColors();
+
                 setUserInput("");
+                lastPendingInput = null;
                 cursorIndex = 0;
             } else if (e.getKey() == GLFW_KEY_BACKSPACE) {
                 if (cursorIndex > 0) {
@@ -133,6 +143,24 @@ public class Terminal extends Sprite implements Listener {
                 cursorCount = 0;
                 cursorIndex++;
                 cursorIndex = Math.max(0, Math.min(cursorIndex, getUserInput().length()));
+            } else if (e.getKey() == GLFW_KEY_UP) {
+                if (lastCommandsIndex == -1) lastPendingInput = getUserInput();
+                lastCommandsIndex++;
+                if (lastCommandsIndex >= lastCommands.size()) lastCommandsIndex--;
+                setUserInput(lastCommands.get(lastCommands.size() - lastCommandsIndex - 1));
+                cursorIndex = getUserInput().length();
+            } else if (e.getKey() == GLFW_KEY_DOWN) {
+                lastCommandsIndex--;
+                if (lastCommandsIndex < 0) {
+                    lastCommandsIndex = -1;
+                    if (lastPendingInput != null) {
+                        setUserInput(lastPendingInput);
+                        lastPendingInput = null;
+                    }
+                } else {
+                    setUserInput(lastCommands.get(lastCommands.size() - lastCommandsIndex - 1));
+                }
+                cursorIndex = getUserInput().length();
             } else if (Game.isKeyDown(GLFW_KEY_LEFT_CONTROL) || Game.isKeyDown(GLFW_KEY_RIGHT_CONTROL)) {
                 if (e.getKey() == GLFW_KEY_L) {
                     clear();
@@ -155,6 +183,8 @@ public class Terminal extends Sprite implements Listener {
 
     @EventHandler(EventHandler.Priority.HIGHEST)
     public void onCommandEvent(CommandEvent event) {
+        if (!event.getCommand().equals("")) lastCommands.add(event.getCommand());
+        lastCommandsIndex = -1;
         if (!event.isCanceled()) {
             event.setCanceled(true);
 
@@ -169,11 +199,15 @@ public class Terminal extends Sprite implements Listener {
                             changeDirectory(currentDirectory.getParent());
                         }
                     } else {
+                        boolean test = true;
                         for (GFile file : currentDirectory.listFiles()) {
                             if (file.isDirectory() && file.getName().equals(dest)) {
                                 changeDirectory(file);
+                                test = false;
+                                break;
                             }
                         }
+                        if (test) event.setOutput(event.getArgs()[0] + ": no such directory");
                     }
                 }
             } else if (formatted.equals("ls")) {
@@ -186,7 +220,7 @@ public class Terminal extends Sprite implements Listener {
                     File file = new File(ROOT + "/" + currentDirectory.getPath().substring(1) + "/" + event.getArgs()[0]);
                     if (file.isFile()) {
                         try {
-                            BufferedReader br = new BufferedReader(new FileReader(file));
+                            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF-8"));
                             ArrayList<String> out = new ArrayList<>();
                             String line;
                             while ((line = br.readLine()) != null) out.add(line);
@@ -197,39 +231,13 @@ public class Terminal extends Sprite implements Listener {
                         }
                     }
                 }
+            } else if (formatted.equals("testnotif")) {
+                Main.callEvent(new NotificationEvent("Test " + Math.random()));
             } else if (formatted.equals("")) {
             } else event.setOutput(event.getCommand() + ": command not found.");
         }
     }
 
-    // TODO deal with large arrays
-    private void pushOutput(String[] str) {
-        for (String s : str) {
-            pushOutput(s);
-        }
-    }
-
-    // TODO PREVENT OVERFLOW
-    private void pushOutput(String str) {
-        int max = SIZE_X / Text.getLetterSizeX();
-        String res = "";
-        if (str.length() >= max) {
-            res = str.substring(max - 1);
-            str = str.substring(0, max - 1);
-        }
-
-        if (inputIndex > 0) {
-            inputIndex--;
-            input.setY(input.getY() - LINE_HEIGHT);
-        } else {
-            for (int i = NUMBER_OF_ROWS - 2; i >= 1; i--) {
-                display[i].setValue(display[i - 1].getValue());
-            }
-        }
-        display[inputIndex].setValue(str);
-
-        if (!res.equals("")) pushOutput(res);
-    }
 
     private void changeDirectory(GFile newDirectory) {
         currentDirectory = newDirectory;
@@ -255,9 +263,8 @@ public class Terminal extends Sprite implements Listener {
     }
 
     private void clear() {
-        for (Text text : display) text.setValue("");
-        inputIndex = NUMBER_OF_ROWS - 1;
-        input.setY(TEXT_OFFSET + (NUMBER_OF_ROWS - 1) * LINE_HEIGHT);
+        display.clear();
+        input.setY(TEXT_OFFSET + (ROWS - 1) * Text.getLetterSizeY());
         genColors();
     }
 

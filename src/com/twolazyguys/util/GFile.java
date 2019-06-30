@@ -29,6 +29,7 @@ public class GFile {
 
     public GFile[] listFiles() {
         File[] files = javaFile.listFiles();
+        if(files == null) return new GFile[0];
         GFile[] res = new GFile[files.length];
         for (int i = 0; i < res.length; i++) res[i] = new GFile(files[i].getPath());
         return res;
