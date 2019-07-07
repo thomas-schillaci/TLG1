@@ -21,6 +21,7 @@ public class RightPanel extends Sprite implements Listener {
         super(300, 0);
         Main.addListener(bell);
         Main.addListener(notificationManager);
+        Main.addListener(monitor);
         genColors();
     }
 

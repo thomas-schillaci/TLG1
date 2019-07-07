@@ -2,6 +2,7 @@ package com.twolazyguys.gamestates;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.entities.Colormap;
+import com.twolazyguys.entities.Dwarftack;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.sprites.*;
 import net.colozz.engine2.events.EventHandler;
