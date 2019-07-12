@@ -29,7 +29,6 @@ public class Monitor extends Sprite implements Listener {
         float[][] res = new float[90][90];
 
         int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
-        System.out.println(cpuUsage * (cpuSheet.getColumns() - 1));
         float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
         for (int x = 0; x < cpuColors.length; x++) {
             for (int y = 0; y < cpuColors[0].length; y++) {
