@@ -35,6 +35,7 @@ public class Dwarftack extends Attack {
 			AttackEvent attack = new AttackEvent(this.getName(), this.getDl(), this.getDammage(), this.getCpuUsage(),
 					this.getEmergencyLevel(), this.getWantedLevel());
 			Main.callEvent(attack);
+			running = false;
 			this.count = 0;
 		}
 	}

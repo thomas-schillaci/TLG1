@@ -12,7 +12,6 @@ import net.colozz.engine2.gamestates.GameState;
 import net.colozz.engine2.util.Color;
 import org.lwjgl.glfw.GLFW;
 
-import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
 import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
@@ -50,6 +49,10 @@ public class Game extends GameState implements Listener {
         colormap.addSprite(lb);
         colormap.addSprite(shortcut);
         colormap.addSprite(rightPanel);
+        
+        Dwarftack attack = new Dwarftack();
+        Main.addListener(attack);
+        
     }
 
     @EventHandler

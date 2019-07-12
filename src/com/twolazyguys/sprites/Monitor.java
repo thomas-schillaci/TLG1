@@ -1,5 +1,6 @@
 package com.twolazyguys.sprites;
 
+
 import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.util.ColorSpritesheet;
 
@@ -28,6 +29,7 @@ public class Monitor extends Sprite implements Listener {
         float[][] res = new float[90][90];
 
         int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
+        System.out.println(cpuUsage * (cpuSheet.getColumns() - 1));
         float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
         for (int x = 0; x < cpuColors.length; x++) {
             for (int y = 0; y < cpuColors[0].length; y++) {
@@ -42,7 +44,6 @@ public class Monitor extends Sprite implements Listener {
                 res[x+45][y + 45] = bandwidthColors[x][y];
             }
         }
-
         return res;
     }
 
@@ -73,7 +74,9 @@ public class Monitor extends Sprite implements Listener {
     }
     
     @EventHandler
-	public void onAttackEvent(AttackEvent attack) {
-    	this.cpuUsage += attack.getCpuUsage();
+    public void onAttackEvent(AttackEvent e) {
+    	this.setCpuUsage(this.getCpuUsage() + e.getCpuUsage());
+    	this.setColors(this.genColors());
     }
+    
 }
