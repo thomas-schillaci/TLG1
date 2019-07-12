@@ -17,6 +17,7 @@ public class LoadingBar extends Sprite implements Listener {
 	private static int LENGTH = 340, WIDTH = 30; //200 //15
 	private static float DISCHARGING_SPEED = 2f;
 	private static float DONE_COLOR = 1, INPROGRESS_COLOR = 0.3f;
+	private float accu = 0f;
 
 	public LoadingBar() {
 		super(172, 258, createEmptyBar()); //118 162 
@@ -40,21 +41,27 @@ public class LoadingBar extends Sprite implements Listener {
 	@EventHandler
 	public void onGameTickEvent(GameTickEvent e) {
 		count += Main.delta;
-		if (count > 0.5f) {
+		if (count >= 1f) {
 			int step;
+			float[][] res = this.getColors();
 			if (wantedLevel > 0 && percent < wantedLevel) {
-				step = (int) (chargingSpeed * count);
+				accu += chargingSpeed*LENGTH/100;
+				step = (int) accu;
 				int sup = Math.min(percent + step, wantedLevel);
 				for (int j = 1; j < WIDTH - 1; j++) {
 					for (int i = percent + 1; i <= sup; i++) {
-						getColors()[i][j] = DONE_COLOR;
+						res[i][j] = DONE_COLOR;
 					}
 					if (sup == wantedLevel) {
 						wantedLevel = 0;
 					}
 				}
 				percent += (sup-percent);
-				Main.callEvent(new SpriteChangedEvent(this));
+				if(step>0) {
+					this.setColors(res);
+					Main.callEvent(new SpriteChangedEvent(this));
+					accu = 0;
+				}
 			}
 			if(percent == LENGTH-2) return;
 			if(wantedLevel == 0 && percent > 0){
@@ -62,11 +69,15 @@ public class LoadingBar extends Sprite implements Listener {
 				int inf = Math.max(0,percent - step);
 				for (int j = 1; j < WIDTH - 1; j++) {
 					for (int i = inf+1; i <= percent; i++) {
-						getColors()[i][j] = 0f;
+						res[i][j] = 0f;
 					}
 				}
 				percent=inf;
-				Main.callEvent(new SpriteChangedEvent(this));
+				if(step>0) {
+					this.setColors(res);
+					Main.callEvent(new SpriteChangedEvent(this));
+					accu = 0;
+				}
 			}
 			count = 0;
 		}
@@ -76,12 +87,15 @@ public class LoadingBar extends Sprite implements Listener {
 	public void onAttackEvent(AttackEvent attack) {
 		if(wantedLevel==0) {
 			chargingSpeed = attack.getEmergencyLevel();
-			wantedLevel = Math.min(LENGTH-2,percent + attack.getWantedLevel());
+			wantedLevel = Math.min(LENGTH-2,percent + attack.getWantedLevel()*LENGTH/100);
+			float[][] res = this.getColors();
 			for(int j = 1; j <= WIDTH-2; j++) {
 				for(int i = percent+1 ; i <= wantedLevel; i++) {
-					getColors()[i][j] = INPROGRESS_COLOR;
+					res[i][j] = INPROGRESS_COLOR;
 				}
 			}
+			this.setColors(res);
+			Main.callEvent(new SpriteChangedEvent(this));
 		}
 	}
 

@@ -1,10 +1,15 @@
 package com.twolazyguys.sprites;
 
+
+import com.twolazyguys.events.AttackEvent;
 import com.twolazyguys.util.ColorSpritesheet;
 
-public class Monitor extends Sprite {
+import net.colozz.engine2.events.EventHandler;
+import net.colozz.engine2.events.Listener;
 
-    private float cpuUsage = 0.5f, bandwidthUsage = 1;
+public class Monitor extends Sprite implements Listener {
+
+    private float cpuUsage = 0f, bandwidthUsage = 1;
     private boolean changed = false;
 
     private ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
@@ -24,6 +29,7 @@ public class Monitor extends Sprite {
         float[][] res = new float[90][90];
 
         int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
+        System.out.println(cpuUsage * (cpuSheet.getColumns() - 1));
         float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
         for (int x = 0; x < cpuColors.length; x++) {
             for (int y = 0; y < cpuColors[0].length; y++) {
@@ -38,7 +44,6 @@ public class Monitor extends Sprite {
                 res[x+45][y + 45] = bandwidthColors[x][y];
             }
         }
-
         return res;
     }
 
@@ -67,4 +72,11 @@ public class Monitor extends Sprite {
     public boolean hasChanged() {
         return changed;
     }
+    
+    @EventHandler
+    public void onAttackEvent(AttackEvent e) {
+    	this.setCpuUsage(this.getCpuUsage() + e.getCpuUsage());
+    	this.setColors(this.genColors());
+    }
+    
 }
