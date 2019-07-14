@@ -12,9 +12,13 @@ import java.lang.reflect.WildcardType;
 public class Shortcut extends Sprite implements Listener {
 
     private Sprite[] sprites;
-    private static int LENGTH = 90, WIDTH = 60;
+    private static int LENGTH = 104, WIDTH = 69;
     private static int NUMBER_OF_ROWS = 4;
     private static Text[] display = new Text[NUMBER_OF_ROWS];
+    private static Text[] display_2 = new Text[1];
+    private static Text[] display_3 = new Text[1];
+    private static Text[] display_4 = new Text[1];
+    private static Text[][] displays = {display_2, display_3, display_4};
 
     private final static int TEXT_OFFSET = 2;
     private final static int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
@@ -26,7 +30,7 @@ public class Shortcut extends Sprite implements Listener {
 
 
     public Shortcut() {
-        super(225, 100, genColors());
+        super(405, 178, genColors());
     }
 
     private static float[][] genColors() {
@@ -35,7 +39,7 @@ public class Shortcut extends Sprite implements Listener {
         for (int i = 0; i < LENGTH; i++) {
             for (int j = 0; j < WIDTH; j++) {
                 if (i == 0 || i == LENGTH - 1 || j == 0 || j == WIDTH - 1)
-                    res[i][j] = 0.075f;
+                    res[i][j] = 0.5f;
             }
         }
 
