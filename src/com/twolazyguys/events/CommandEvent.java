@@ -9,6 +9,10 @@ public class CommandEvent extends Event {
     private boolean canceled = false;
     private String[] output = new String[0];
 
+    public CommandEvent(String command) {
+        this(command, new String[0]);
+    }
+
     public CommandEvent(String command, String[] args) {
         this.command = command;
         this.args = args;
