@@ -23,6 +23,7 @@ public class Dwarftack extends Attack {
 			String formatted = event.getCommand().toLowerCase();
 
 			if (formatted.equals(this.getName())) {
+				event.setCanceled(true);
 				this.running = true;
 			}
 		}
