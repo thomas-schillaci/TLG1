@@ -1,6 +1,7 @@
 package com.twolazyguys.sprites;
 
 import com.twolazyguys.events.CommandEvent;
+import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
@@ -12,7 +13,7 @@ import java.lang.reflect.WildcardType;
 
 public class Shortcut extends Sprite implements Listener {
 
-    private Sprite[] sprites;
+    private ColorSpritesheet sheet = new ColorSpritesheet(155, 178, "shortcuts");
     private static int LENGTH = 104, WIDTH = 69;
     private static int NUMBER_OF_ROWS = 4;
     private static Text[] display = new Text[NUMBER_OF_ROWS];
@@ -31,8 +32,8 @@ public class Shortcut extends Sprite implements Listener {
 
 
     public Shortcut() {
-        super(405, 178, genColors());
-    }
+        super(155, 178, genColors());
+    } // x = 405, y = 178
 
     private static float[][] genColors() {
         float[][] res = new float[LENGTH][WIDTH];
@@ -58,7 +59,7 @@ public class Shortcut extends Sprite implements Listener {
     }
 
     private void resetShortcut(int sc) {
-        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + "");
+        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + ".");
         setColors(genColors());
     }
 
@@ -75,12 +76,18 @@ public class Shortcut extends Sprite implements Listener {
                     String sc = event.getArgs()[0];
                     String name = event.getArgs()[1];
 
-                    switch (sc) {
-                        case "1": setShortcut(3, name); break;
-                        case "2": setShortcut(2, name); break;
-                        case "3": setShortcut(1, name); break;
-                        case "4": setShortcut(0, name); break;
-                        default: event.setOutput("Only 4 shortcuts allowed"); break;
+                    if (name.equals("battalion")) {
+
+                        switch (sc) {
+                            case "1": setShortcut(3, name); break;
+                            case "2": setShortcut(2, name); break;
+                            case "3": setShortcut(1, name); break;
+                            case "4": setShortcut(0, name); break;
+                            default: event.setOutput("Only 4 shortcuts allowed"); break;
+                        }
+                    }
+                    else {
+                        event.setOutput(name + " is not an attack");
                     }
 
                 }
@@ -107,5 +114,21 @@ public class Shortcut extends Sprite implements Listener {
             }
         }
     }
+
+    /*
+    @EventHandler
+    public void onGameTicketEvent(GameTickEvent event) {
+
+        int x = event.getX();
+        int y = event.getY();
+
+        int sx = sheet.getSprite().getX();
+        int sy = sheet.getSprite().getY();
+
+        int dx = sheet.getSizeX();
+        int dy = sheet.getSizeY();
+    }
+
+     */
 
 }
