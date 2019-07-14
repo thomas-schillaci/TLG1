@@ -4,6 +4,7 @@ import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
+import net.colozz.engine2.events.MouseInputEvent;
 import net.colozz.engine2.events.Listener;
 import sun.security.util.Length;
 
