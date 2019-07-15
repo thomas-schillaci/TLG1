@@ -13,7 +13,7 @@ import java.lang.reflect.WildcardType;
 
 public class Shortcut extends Sprite implements Listener {
 
-    private ColorSpritesheet sheet = new ColorSpritesheet(155, 178, "shortcuts");
+    // private ColorSpritesheet sheet = new ColorSpritesheet(155, 178, "shortcuts");
     private static int LENGTH = 104, WIDTH = 69;
     private static int NUMBER_OF_ROWS = 4;
     private static Text[] display = new Text[NUMBER_OF_ROWS];
