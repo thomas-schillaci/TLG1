@@ -1,12 +1,15 @@
 package com.twolazyguys.sprites;
 
+import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.events.GameTickEvent;
+import com.twolazyguys.gamestates.Game;
 import com.twolazyguys.util.ColorSpritesheet;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.MouseInputEvent;
 import net.colozz.engine2.events.Listener;
+import org.lwjgl.glfw.GLFW;
 import sun.security.util.Length;
 
 import java.lang.reflect.WildcardType;
@@ -27,7 +30,8 @@ public class Shortcut extends Sprite implements Listener {
 
 
     static {
-        for (int i = 0; i < 4; i++) display[i] = new Text(TEXT_OFFSET, (i + 1) * LINE_HEIGHT + TEXT_OFFSET, String.format("%d. ", 4 - i));
+        for (int i = 0; i < 4; i++)
+            display[i] = new Text(TEXT_OFFSET, (i + 1) * LINE_HEIGHT + TEXT_OFFSET, String.format("%d. ", 4 - i));
     }
 
 
@@ -35,6 +39,8 @@ public class Shortcut extends Sprite implements Listener {
         super(155, 178, genColors());
     } // x = 405, y = 178
 
+    // Il y a une nouvelle manière de procéder sans faire appel à des méthode statiques
+    // Cf Discord
     private static float[][] genColors() {
         float[][] res = new float[LENGTH][WIDTH];
 
@@ -45,11 +51,16 @@ public class Shortcut extends Sprite implements Listener {
             }
         }
 
-        for (Text text : display) {
+        // Penses à utiliser super.storeColors
+/*        for (Text text : display) {
             for (int x = 0; x < text.getColors().length; x++)
                 for (int y = 0; y < text.getColors()[0].length; y++)
                     res[x + text.getX()][y + text.getY()] = text.getColors()[x][y];
+        }*/
+        for (Text text : display) {
+            storeColors(text, res);
         }
+
         return res;
     }
 
@@ -76,25 +87,33 @@ public class Shortcut extends Sprite implements Listener {
                     String sc = event.getArgs()[0];
                     String name = event.getArgs()[1];
 
+                    // On peut bind sur ce qu'on veut comme commande non ?
                     if (name.equals("battalion")) {
 
                         switch (sc) {
-                            case "1": setShortcut(3, name); break;
-                            case "2": setShortcut(2, name); break;
-                            case "3": setShortcut(1, name); break;
-                            case "4": setShortcut(0, name); break;
-                            default: event.setOutput("Only 4 shortcuts allowed"); break;
+                            case "1":
+                                setShortcut(3, name);
+                                break;
+                            case "2":
+                                setShortcut(2, name);
+                                break;
+                            case "3":
+                                setShortcut(1, name);
+                                break;
+                            case "4":
+                                setShortcut(0, name);
+                                break;
+                            default:
+                                event.setOutput("Only 4 shortcuts allowed");
+                                break;
                         }
-                    }
-                    else {
+                    } else {
                         event.setOutput(name + " is not an attack");
                     }
 
                 }
             }
-        }
-
-        else if (formatted.equals("unbind")) {
+        } else if (formatted.equals("unbind")) {
             if (!event.isCanceled()) {
                 event.setCanceled(true);
 
@@ -104,31 +123,48 @@ public class Shortcut extends Sprite implements Listener {
                     String sc = event.getArgs()[0];
 
                     switch (sc) {
-                        case "1": resetShortcut(3); break;
-                        case "2": resetShortcut(2); break;
-                        case "3": resetShortcut(1); break;
-                        case "4": resetShortcut(0); break;
-                        default: event.setOutput("There are only 4 shortcuts..."); break;
+                        case "1":
+                            resetShortcut(3);
+                            break;
+                        case "2":
+                            resetShortcut(2);
+                            break;
+                        case "3":
+                            resetShortcut(1);
+                            break;
+                        case "4":
+                            resetShortcut(0);
+                            break;
+                        default:
+                            event.setOutput("There are only 4 shortcuts...");
+                            break;
                     }
                 }
             }
         }
     }
 
-    /*
     @EventHandler
-    public void onGameTicketEvent(GameTickEvent event) {
+    public void onMouseInputEvent(MouseInputEvent event) {
+        if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT && event.getAction() == GLFW.GLFW_RELEASE) {
+            double[] xt = new double[1];
+            double[] yt = new double[1];
+            GLFW.glfwGetCursorPos(event.getWindow(), xt, yt);
+            double x = xt[0] * Game.X_PIXELS / Main.width;
+            double y = Game.Y_PIXELS - yt[0] * Game.Y_PIXELS / Main.height;
 
-        int x = event.getX();
-        int y = event.getY();
+            // Je suppose que tes sprites, ce sont tes Text
+            // Par exemple :
 
-        int sx = sheet.getSprite().getX();
-        int sy = sheet.getSprite().getY();
+            float sx = display[3].getX() + getX();
+            float sy = display[3].getY() + getY();
+            float dx = display[3].getSizeX();
+            float dy = display[3].getSizeY();
 
-        int dx = sheet.getSizeX();
-        int dy = sheet.getSizeY();
+            if (x >= sx && x <= sx + dx && y >= sy && y <= sy + dy) {
+                System.out.println("Click !");
+            }
+        }
     }
-
-     */
 
 }
