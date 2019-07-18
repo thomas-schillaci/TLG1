@@ -10,21 +10,16 @@ import net.colozz.engine2.events.KeyboardInputEvent;
 import net.colozz.engine2.events.MouseInputEvent;
 import net.colozz.engine2.events.Listener;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.system.CallbackI;
 import sun.security.util.Length;
 
 import java.lang.reflect.WildcardType;
 
 public class Shortcut extends Sprite implements Listener {
 
-    // private ColorSpritesheet sheet = new ColorSpritesheet(155, 178, "shortcuts");
     private static int LENGTH = 104, WIDTH = 69;
     private static int NUMBER_OF_ROWS = 4;
     private static Text[] display = new Text[NUMBER_OF_ROWS];
-    private static Text[] display_2 = new Text[1];
-    private static Text[] display_3 = new Text[1];
-    private static Text[] display_4 = new Text[1];
-    private static Text[][] displays = {display_2, display_3, display_4};
-
     private final static int TEXT_OFFSET = 2;
     private final static int LINE_HEIGHT = Text.getLetterSizeY() + TEXT_OFFSET;
 
@@ -65,13 +60,19 @@ public class Shortcut extends Sprite implements Listener {
     }
 
     private void setShortcut(int sc, String name) {
-        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + "." + name);
+        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + ". " + name);
         setColors(genColors());
     }
 
     private void resetShortcut(int sc) {
-        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + ".");
+        if (sc >= 0 && sc <= 3) display[sc].setValue((4 - sc) + ". ");
         setColors(genColors());
+    }
+
+    private boolean isBinded(int i) {
+        boolean binded = false;
+        if (display[i].getValue().length() != 3) binded = true;
+        return binded;
     }
 
     @EventHandler(EventHandler.Priority.LOWEST)
@@ -88,7 +89,7 @@ public class Shortcut extends Sprite implements Listener {
                     String name = event.getArgs()[1];
 
                     // On peut bind sur ce qu'on veut comme commande non ?
-                    if (name.equals("battalion")) {
+                    // if (name.equals("battalion")) {
 
                         switch (sc) {
                             case "1":
@@ -107,9 +108,11 @@ public class Shortcut extends Sprite implements Listener {
                                 event.setOutput("Only 4 shortcuts allowed");
                                 break;
                         }
+                    /*
                     } else {
                         event.setOutput(name + " is not an attack");
                     }
+                    */
 
                 }
             }
@@ -153,17 +156,80 @@ public class Shortcut extends Sprite implements Listener {
             double x = xt[0] * Game.X_PIXELS / Main.width;
             double y = Game.Y_PIXELS - yt[0] * Game.Y_PIXELS / Main.height;
 
-            // Je suppose que tes sprites, ce sont tes Text
-            // Par exemple :
+            float[] sx = {display[3].getX() + getX(), display[2].getX() + getX(), display[1].getX() + getX(), display[0].getX() + getX()};
+            float[] sy = {display[3].getY() + getY(), display[2].getY() + getY(), display[1].getY() + getY(), display[0].getY() + getY()};
+            float[] dx = {display[3].getSizeX(), display[2].getSizeX(), display[1].getSizeX(), display[0].getSizeX()};
+            float[] dy = {display[3].getSizeY(), display[2].getSizeY(), display[1].getSizeY(), display[0].getSizeY()};
 
-            float sx = display[3].getX() + getX();
-            float sy = display[3].getY() + getY();
-            float dx = display[3].getSizeX();
-            float dy = display[3].getSizeY();
+            /*
+            float sx_1 = display[3].getX() + getX();
+            float sy_1 = display[3].getY() + getY();
+            float dx_1 = display[3].getSizeX();
+            float dy_1 = display[3].getSizeY();
 
-            if (x >= sx && x <= sx + dx && y >= sy && y <= sy + dy) {
-                System.out.println("Click !");
+            float sx_2 = display[2].getX() + getX();
+            float sy_2 = display[2].getY() + getY();
+            float dx_2 = display[2].getSizeX();
+            float dy_2 = display[2].getSizeY();
+
+            float sx_3 = display[1].getX() + getX();
+            float sy_3 = display[1].getY() + getY();
+            float dx_3 = display[1].getSizeX();
+            float dy_3 = display[1].getSizeY();
+
+            float sx_4 = display[0].getX() + getX();
+            float sy_4 = display[0].getY() + getY();
+            float dx_4 = display[0].getSizeX();
+            float dy_4 = display[0].getSizeY();
+
+            if (x >= sx_1 && x <= sx_1 + dx_1 && y >= sy_1 && y <= sy_1 + dy_1) {
+                if (isBinded(3)) {
+                    // System.out.println(display[3].getValue().substring(3));
+                    if (display[3].getValue().substring(3).equals("battalion")) {
+                            Battalion battalion = new Battalion();
+                            CommandEvent attack = new CommandEvent("dwarf");
+                            battalion.onCommandEvent(attack);
+                    }
+                }
+            } else if (x >= sx_2 && x <= sx_2 + dx_2 && y >= sy_2 && y <= sy_2 + dy_2) {
+                if (isBinded(2)) {
+                    if (display[2].getValue().substring(3).equals("battalion")) {
+                        Battalion battalion = new Battalion();
+                        CommandEvent attack = new CommandEvent("dwarf");
+                        battalion.onCommandEvent(attack);
+                    }
+                }
+            } else if (x >= sx_3 && x <= sx_3 + dx_3 && y >= sy_3 && y <= sy_3 + dy_3) {
+                if (isBinded(1)) {
+                    if (display[1].getValue().substring(3).equals("battalion")) {
+                        Battalion battalion = new Battalion();
+                        CommandEvent attack = new CommandEvent("dwarf");
+                        battalion.onCommandEvent(attack);
+                    }
+                }
+            } else if (x >= sx_4 && x <= sx_4 + dx_4 && y >= sy_4 && y <= sy_4 + dy_4) {
+                if (isBinded(0)) {
+                    if (display[0].getValue().substring(3).equals("battalion")) {
+                        Battalion battalion = new Battalion();
+                        CommandEvent attack = new CommandEvent("dwarf");
+                        battalion.onCommandEvent(attack);
+                    }
+                }
             }
+            */
+
+            for (int i = 0; i < 4; i++) {
+                if (x >= sx[i] && x <= sx[i] + dx[i] && y >= sy[i] && y <= sy[i] + dy[i]) {
+                    if (isBinded(4 - i - 1)) {
+                        if (display[4 - i - 1].getValue().substring(3).equals("battalion")) {
+                            Battalion battalion = new Battalion();
+                            CommandEvent attack = new CommandEvent("dwarf");
+                            battalion.onCommandEvent(attack);
+                        }
+                    }
+                }
+            }
+
         }
     }
 
