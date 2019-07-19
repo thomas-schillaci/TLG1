@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.CommandEvent;
+import com.twolazyguys.events.DownloadEvent;
 import com.twolazyguys.gamestates.Game;
 
+import com.twolazyguys.util.Download;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
 
