@@ -28,7 +28,9 @@ public class Dwarftack extends Attack {
 			}
 		}
 	}
-	
+
+	// Léo, je pense que cet évenement devrait être trigger depuis Dwarf (un nain lance des attaques,
+	// et non pas l'attaque lance des attaques)
 	@EventHandler
 	public void onGameTickEvent(GameTickEvent event) {
 		this.count += Main.delta;
