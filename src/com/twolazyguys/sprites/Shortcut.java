@@ -32,7 +32,7 @@ public class Shortcut extends Sprite implements Listener {
 
 
     public Shortcut() {
-        super(405, 178, genColors()); // x = 155, y = 178
+        super(405, 178, genColors());
     }
 
     private static float[][] genColors() {
@@ -44,7 +44,6 @@ public class Shortcut extends Sprite implements Listener {
                     res[i][j] = 0.5f;
             }
         }
-
 
         for (Text text : display) {
             storeColors(text, res);
