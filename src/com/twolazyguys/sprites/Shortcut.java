@@ -59,6 +59,16 @@ public class Shortcut extends Sprite implements Listener {
         return binded;
     }
 
+    private int shortcutsAvailable() {
+        int nbShorcuts = 4;
+        for (int i = 0; i < 4; i++) {
+            if (display[i].getValue().length() != 3) {
+                nbShorcuts--;
+            }
+        }
+        return nbShorcuts;
+    }
+
     @EventHandler(EventHandler.Priority.LOWEST)
     public void onCommandEvent(CommandEvent event) {
         String formatted = event.getCommand().toLowerCase();
@@ -75,19 +85,15 @@ public class Shortcut extends Sprite implements Listener {
                     switch (sc) {
                             case "1":
                                 setShortcut(3, name);
-                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "2":
                                 setShortcut(2, name);
-                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "3":
                                 setShortcut(1, name);
-                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "4":
                                 setShortcut(0, name);
-                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             default:
                                 event.setOutput("Only 4 shortcuts allowed :c");
@@ -107,26 +113,36 @@ public class Shortcut extends Sprite implements Listener {
                     switch (sc) {
                         case "1":
                             resetShortcut(3);
-                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "2":
                             resetShortcut(2);
-                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "3":
                             resetShortcut(1);
-                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "4":
                             resetShortcut(0);
-                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
+                        case "all":
+                            for (int i = 0; i < 4; i++) resetShortcut(i);
                         default:
                             event.setOutput("There are only 4 shortcuts available :c");
                             break;
                     }
                 }
             }
+        }
+
+        switch (shortcutsAvailable()) {
+            case 0:
+                event.setOutput("No more shortcuts avilable");
+                break;
+            case 1:
+                event.setOutput(String.format("%d", shortcutsAvailable()) + " more shortcut available");
+                break;
+            default:
+                event.setOutput(String.format("%d", shortcutsAvailable()) + " more shortcuts available");
+                break;
         }
     }
 
