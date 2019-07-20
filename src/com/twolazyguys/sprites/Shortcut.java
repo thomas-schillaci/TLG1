@@ -149,9 +149,7 @@ public class Shortcut extends Sprite implements Listener {
                 if (x >= sx[i] && x <= sx[i] + dx[i] && y >= sy[i] && y <= sy[i] + dy[i]) {
                     if (isBinded(4 - i - 1)) {
                         String shortcut = display[4 -i -1].getValue().substring(3).toLowerCase();
-                        System.out.println(shortcut);
-                        CommandEvent commandEvent = new CommandEvent(shortcut);
-                        Main.callEvent(commandEvent);
+                        Main.callEvent(new CommandEvent(shortcut));
                     }
                 }
             }
