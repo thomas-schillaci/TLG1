@@ -162,9 +162,6 @@ public class Shortcut extends Sprite implements Listener {
             float[] dy = {display[3].getSizeY(), display[2].getSizeY(), display[1].getSizeY(), display[0].getSizeY()};
 
 
-            float[] sx1 = new float[4];
-
-
             for (int i = 0; i < 4; i++) {
                 if (x >= sx[i] && x <= sx[i] + dx[i] && y >= sy[i] && y <= sy[i] + dy[i]) {
                     if (isBinded(4 - i - 1)) {
