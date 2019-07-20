@@ -37,18 +37,9 @@ public class Shortcut extends Sprite implements Listener {
 
     private static float[][] genColors() {
         float[][] res = new float[LENGTH][WIDTH];
-
-        for (int i = 0; i < LENGTH; i++) {
-            for (int j = 0; j < WIDTH; j++) {
-                if (i == 0 || i == LENGTH - 1 || j == 0 || j == WIDTH - 1)
-                    res[i][j] = 0.5f;
-            }
-        }
-
         for (Text text : display) {
             storeColors(text, res);
         }
-
         return res;
     }
 
@@ -77,24 +68,29 @@ public class Shortcut extends Sprite implements Listener {
                 event.setCanceled(true);
 
                 if (event.getArgs().length == 0) event.setOutput("Which shortcut?");
+                else if (event.getArgs().length == 1) event.setOutput("No shortcut to bind :c");
                 else {
                     String sc = event.getArgs()[0];
                     String name = event.getArgs()[1];
                     switch (sc) {
                             case "1":
                                 setShortcut(3, name);
+                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "2":
                                 setShortcut(2, name);
+                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "3":
                                 setShortcut(1, name);
+                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             case "4":
                                 setShortcut(0, name);
+                                event.setOutput("Shortcut binded sucessfully c:");
                                 break;
                             default:
-                                event.setOutput("Only 4 shortcuts allowed");
+                                event.setOutput("Only 4 shortcuts allowed :c");
                                 break;
                     }
                 }
@@ -111,18 +107,22 @@ public class Shortcut extends Sprite implements Listener {
                     switch (sc) {
                         case "1":
                             resetShortcut(3);
+                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "2":
                             resetShortcut(2);
+                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "3":
                             resetShortcut(1);
+                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         case "4":
                             resetShortcut(0);
+                            event.setOutput("Shortcut unbinded sucessfully c:");
                             break;
                         default:
-                            event.setOutput("There are only 4 shortcuts...");
+                            event.setOutput("There are only 4 shortcuts available :c");
                             break;
                     }
                 }
@@ -144,6 +144,10 @@ public class Shortcut extends Sprite implements Listener {
             float[] sy = {display[3].getY() + getY(), display[2].getY() + getY(), display[1].getY() + getY(), display[0].getY() + getY()};
             float[] dx = {display[3].getSizeX(), display[2].getSizeX(), display[1].getSizeX(), display[0].getSizeX()};
             float[] dy = {display[3].getSizeY(), display[2].getSizeY(), display[1].getSizeY(), display[0].getSizeY()};
+
+
+            float[] sx1 = new float[4];
+
 
             for (int i = 0; i < 4; i++) {
                 if (x >= sx[i] && x <= sx[i] + dx[i] && y >= sy[i] && y <= sy[i] + dy[i]) {
