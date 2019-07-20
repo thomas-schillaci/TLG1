@@ -1,6 +1,7 @@
 package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
+import com.twolazyguys.attacks.Dwarftack;
 import com.twolazyguys.events.CommandEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.gamestates.Game;
@@ -80,10 +81,7 @@ public class Shortcut extends Sprite implements Listener {
                 else {
                     String sc = event.getArgs()[0];
                     String name = event.getArgs()[1];
-
-                    // if (name.equals("battalion")) {
-
-                        switch (sc) {
+                    switch (sc) {
                             case "1":
                                 setShortcut(3, name);
                                 break;
@@ -99,13 +97,7 @@ public class Shortcut extends Sprite implements Listener {
                             default:
                                 event.setOutput("Only 4 shortcuts allowed");
                                 break;
-                        }
-                    /*
-                    } else {
-                        event.setOutput(name + " is not an attack");
                     }
-                    */
-
                 }
             }
         } else if (formatted.equals("unbind")) {
@@ -142,9 +134,6 @@ public class Shortcut extends Sprite implements Listener {
     @EventHandler
     public void onMouseInputEvent(MouseInputEvent event) {
 
-        Battalion battalion = new Battalion();
-        // CommandEvent attack = new CommandEvent("dwarf");
-
         if (event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT && event.getAction() == GLFW.GLFW_RELEASE) {
             double[] xt = new double[1];
             double[] yt = new double[1];
@@ -157,15 +146,13 @@ public class Shortcut extends Sprite implements Listener {
             float[] dx = {display[3].getSizeX(), display[2].getSizeX(), display[1].getSizeX(), display[0].getSizeX()};
             float[] dy = {display[3].getSizeY(), display[2].getSizeY(), display[1].getSizeY(), display[0].getSizeY()};
 
-            CommandEvent attack = new CommandEvent("dwarf");
-
             for (int i = 0; i < 4; i++) {
                 if (x >= sx[i] && x <= sx[i] + dx[i] && y >= sy[i] && y <= sy[i] + dy[i]) {
                     if (isBinded(4 - i - 1)) {
-                        if (display[4 - i - 1].getValue().substring(3).equals("battalion")) {
-                            // CommandEvent attack = new CommandEvent("dwarf");
-                            battalion.onCommandEvent(attack);
-                        }
+                        String shortcut = display[4 -i -1].getValue().substring(3).toLowerCase();
+                        System.out.println(shortcut);
+                        CommandEvent commandEvent = new CommandEvent(shortcut);
+                        Main.callEvent(commandEvent);
                     }
                 }
             }
