@@ -51,8 +51,8 @@ public class Terminal extends Sprite implements Listener {
 
     public Terminal() {
         super(
-                10,
-                10
+                5,
+                5
         );
 
         display = new LogDisplay(TEXT_OFFSET, TEXT_OFFSET + Text.getLetterSizeY(), ROWS - 1, COLUMNS);
@@ -166,6 +166,10 @@ public class Terminal extends Sprite implements Listener {
                     clear();
                 } else if (e.getKey() == GLFW_KEY_D) {
                     Main.exit();
+                }
+                // FIXME AZERTY
+                else if (e.getKey() == GLFW_KEY_W) {
+                    setUserInput("");
                 }
             }
         }

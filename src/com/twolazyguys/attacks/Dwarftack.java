@@ -8,6 +8,7 @@ import com.twolazyguys.events.GameTickEvent;
 import net.colozz.engine2.events.EventHandler;
 
 public class Dwarftack extends Attack {
+
 	private boolean running = false;
 	private float count = 0;
 

@@ -62,4 +62,8 @@ public class RightPanel extends Sprite implements Listener {
         }
     }
 
+    public Monitor getMonitor() {
+        return monitor;
+    }
+
 }

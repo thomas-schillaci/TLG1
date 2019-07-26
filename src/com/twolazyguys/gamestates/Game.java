@@ -25,6 +25,7 @@ public class Game extends GameState implements Listener {
     public final static int X_PIXELS = 512, Y_PIXELS = 288;
 
     private Colormap colormap;
+    private Monitor monitor;
 
     public Game() {
         glClearColor(BRIGHT.r, BRIGHT.g, BRIGHT.b, BRIGHT.a);
@@ -35,6 +36,8 @@ public class Game extends GameState implements Listener {
         Battalion battalion = new Battalion();
         RightPanel rightPanel = new RightPanel();
         colormap = new Colormap(X_PIXELS, Y_PIXELS);
+
+        monitor = rightPanel.getMonitor();
 
         Main.addListener(terminal);
         Main.addListener(lb);
@@ -50,8 +53,8 @@ public class Game extends GameState implements Listener {
         colormap.addSprite(shortcut);
         colormap.addSprite(rightPanel);
         
-        Dwarftack attack = new Dwarftack();
-        Main.addListener(attack);
+//        Dwarftack attack = new Dwarftack();
+//        Main.addListener(attack);
         
     }
 
@@ -73,4 +76,9 @@ public class Game extends GameState implements Listener {
     public Colormap getColormap() {
         return colormap;
     }
+
+    public Monitor getMonitor() {
+        return monitor;
+    }
+
 }
