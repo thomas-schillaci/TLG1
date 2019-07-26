@@ -13,16 +13,25 @@ public class ColorSpritesheet {
 
     private int rows, columns;
     private float[][] colors;
+    private int spriteX;
+    private int spriteY;
 
     public ColorSpritesheet(int rows, int columns, String texture) {
-        this(rows, columns, transformTexture(texture));
+        this(rows, columns, transformTexture(texture), 0, 0);
     }
 
-    private ColorSpritesheet(int rows, int columns, float[][] colors) {
+    public ColorSpritesheet(int rows, int columns, String texture, int spriteX, int spriteY) {
+        this(rows, columns, transformTexture(texture), spriteX, spriteY);
+    }
+
+    private ColorSpritesheet(int rows, int columns, float[][] colors, int spriteX, int spriteY) {
         this.rows = rows;
         this.columns = columns;
         this.colors = colors;
+        this.spriteX = spriteX;
+        this.spriteY = spriteY;
     }
+
 
     public Sprite getSprite(int row, int column) {
         int dx = colors.length / columns, dy = colors[0].length / rows;
@@ -31,7 +40,7 @@ public class ColorSpritesheet {
         for (int i = 0; i < colors.length; i++)
             for (int j = 0; j < colors[0].length; j++) colors[i][j] = this.colors[column * dx + i][row * dy + j];
 
-        return new Sprite(colors);
+        return new Sprite(spriteX, spriteY, colors);
     }
 
     private static float[][] transformTexture(String texture) {
@@ -97,4 +106,21 @@ public class ColorSpritesheet {
     public int getColumns() {
         return columns;
     }
+
+    public int getSpriteX() {
+        return spriteX;
+    }
+
+    public void setSpriteX(int spriteX) {
+        this.spriteX = spriteX;
+    }
+
+    public int getSpriteY() {
+        return spriteY;
+    }
+
+    public void setSpriteY(int spriteY) {
+        this.spriteY = spriteY;
+    }
+
 }

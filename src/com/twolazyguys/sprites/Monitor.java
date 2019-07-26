@@ -2,11 +2,9 @@ package com.twolazyguys.sprites;
 
 
 import com.twolazyguys.Main;
-import com.twolazyguys.events.AttackEvent;
-import com.twolazyguys.events.DownloadEvent;
 import com.twolazyguys.events.GameTickEvent;
 import com.twolazyguys.util.ColorSpritesheet;
-
+import com.twolazyguys.util.CpuAllocation;
 import com.twolazyguys.util.Download;
 import net.colozz.engine2.events.EventHandler;
 import net.colozz.engine2.events.Listener;
@@ -24,10 +22,16 @@ public class Monitor extends Sprite implements Listener {
      */
     private float maxBandwidth = 1;
     private ArrayList<Download> downloads = new ArrayList<>();
+    /**
+     * cpuFrequency in MHz
+     */
+    private float cpuFrequency = 100;
+    private ArrayList<CpuAllocation> cpuAllocations = new ArrayList<>();
+
     private boolean changed = false;
 
-    private ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 5, "cpu");
-    private ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi");
+    private ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 6, "cpu", 45, 0);
+    private ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi", 45, 45);
 
     public Monitor(int x, int y) {
         super(x, y);
@@ -43,20 +47,11 @@ public class Monitor extends Sprite implements Listener {
         float[][] res = new float[90][90];
 
         int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
-        float[][] cpuColors = cpuSheet.getSprite(0, cpuIndex).getColors();
-        for (int x = 0; x < cpuColors.length; x++) {
-            for (int y = 0; y < cpuColors[0].length; y++) {
-                res[x + 45][y] = cpuColors[x][y];
-            }
-        }
-
         int bandwidthIndex = (int) (bandwidthUsage * (bandwidthSheet.getColumns() - 1));
-        float[][] bandwidthColors = bandwidthSheet.getSprite(0, bandwidthIndex).getColors();
-        for (int x = 0; x < bandwidthColors.length; x++) {
-            for (int y = 0; y < bandwidthColors[0].length; y++) {
-                res[x + 45][y + 45] = bandwidthColors[x][y];
-            }
-        }
+
+        storeColors(cpuSheet.getSprite(0, cpuIndex), res);
+        storeColors(cpuSheet.getSprite(0, bandwidthIndex), res);
+
         return res;
     }
 
@@ -64,11 +59,13 @@ public class Monitor extends Sprite implements Listener {
         return cpuUsage;
     }
 
-    public void setCpuUsage(float cpuUsage) {
-        if (this.cpuUsage != cpuUsage) {
-            this.cpuUsage = cpuUsage;
-            changed = true;
-        }
+    public float getCpuFrequency() {
+        return cpuFrequency;
+    }
+
+    public void setCpuFrequency(float cpuFrequency) {
+        this.cpuFrequency = cpuFrequency;
+        refreshCpuUsage();
     }
 
     /**
@@ -89,13 +86,16 @@ public class Monitor extends Sprite implements Listener {
         this.maxBandwidth = maxBandwidth;
     }
 
-    public void removeDownload(Download download) {
-        downloads.remove(download);
-    }
-
     private void setBandwidthUsage(float bandwidthUsage) {
         if (this.bandwidthUsage != bandwidthUsage) {
             this.bandwidthUsage = bandwidthUsage;
+            changed = true;
+        }
+    }
+
+    private void setCpuUsage(float cpuUsage) {
+        if (cpuUsage != this.cpuUsage) {
+            this.cpuUsage = cpuUsage;
             changed = true;
         }
     }
@@ -104,14 +104,55 @@ public class Monitor extends Sprite implements Listener {
         return changed;
     }
 
-    @EventHandler
-    public void onDownloadEvent(DownloadEvent e) {
-        downloads.add(e.getDownload());
+    public void addDownload(Download download) {
+        downloads.add(download);
     }
+
+    public void removeDownload(Download download) {
+        downloads.remove(download);
+    }
+
+    public void addCpuAllocation(CpuAllocation cpuAllocation) {
+        cpuAllocations.add(cpuAllocation);
+        refreshCpuUsage();
+    }
+
+    public void removeCpuAllocation(CpuAllocation cpuAllocation) {
+        cpuAllocations.remove(cpuAllocation);
+        refreshCpuUsage();
+    }
+
+    public void refreshCpuUsage() {
+        float usage = 0;
+        for (int i = 0; i < cpuAllocations.size(); i++) {
+            CpuAllocation cpuAllocation = cpuAllocations.get(i);
+            float availableFrequency = (1f - cpuUsage) * cpuFrequency;
+            float requiredFrequency = cpuAllocation.getRequiredFrequency();
+
+            if (requiredFrequency <= availableFrequency) {
+                // Usage of rounding to avoid float precision errors
+                usage += Math.round(100 * requiredFrequency / cpuFrequency) / 100;
+                cpuAllocation.setAllocated(true);
+            } else {
+                cpuAllocation.setAllocated(false);
+            }
+
+            if (usage == 1) {
+                for (int j = i + 1; j < cpuAllocations.size(); j++) {
+                    cpuAllocation.setAllocated(false);
+                }
+                break;
+            }
+
+            assert (usage <= 1);
+        }
+        setCpuUsage(usage);
+    }
+
 
     @EventHandler
     public void onGameTickEvent(GameTickEvent e) {
-        // ALLOCATION
+        // BW ALLOCATION
 
         float needs = 0;
         for (Download download : downloads) needs += download.getServerBandwith();
@@ -129,8 +170,8 @@ public class Monitor extends Sprite implements Listener {
                 float toUse = Math.min(free, downloads.get(i).getServerBandwith());
                 allocated[i] = toUse;
                 free -= toUse;
-                if(free == 0) break;
-                assert(free > 0);
+                if (free == 0) break;
+                assert (free > 0);
             }
             setBandwidthUsage(1);
         }
@@ -156,7 +197,7 @@ public class Monitor extends Sprite implements Listener {
                 break;
             }
         }
-        if(test) clearDownloads();
+        if (test) clearDownloads();
     }
 
 }
