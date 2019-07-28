@@ -147,8 +147,10 @@ public class Terminal extends Sprite implements Listener {
                 if (lastCommandsIndex == -1) lastPendingInput = getUserInput();
                 lastCommandsIndex++;
                 if (lastCommandsIndex >= lastCommands.size()) lastCommandsIndex--;
-                setUserInput(lastCommands.get(lastCommands.size() - lastCommandsIndex - 1));
-                cursorIndex = getUserInput().length();
+                if (lastCommands.size() > 0) {
+                    setUserInput(lastCommands.get(lastCommands.size() - lastCommandsIndex - 1));
+                    cursorIndex = getUserInput().length();
+                }
             } else if (e.getKey() == GLFW_KEY_DOWN) {
                 lastCommandsIndex--;
                 if (lastCommandsIndex < 0) {
