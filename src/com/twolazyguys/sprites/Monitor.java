@@ -3,7 +3,6 @@ package com.twolazyguys.sprites;
 
 import com.twolazyguys.Main;
 import com.twolazyguys.events.GameTickEvent;
-import com.twolazyguys.util.ColorSpritesheet;
 import com.twolazyguys.util.CpuAllocation;
 import com.twolazyguys.util.Download;
 import net.colozz.engine2.events.EventHandler;
@@ -30,8 +29,10 @@ public class Monitor extends Sprite implements Listener {
 
     private boolean changed = false;
 
-    private ColorSpritesheet cpuSheet = new ColorSpritesheet(1, 6, "cpu", 45, 0);
-    private ColorSpritesheet bandwidthSheet = new ColorSpritesheet(1, 4, "wifi", 45, 45);
+    private Cpu cpu = new Cpu(0, 14);
+    private Bandwidth bandwidth = new Bandwidth(0, 81);
+
+    private float graphCount;
 
     public Monitor(int x, int y) {
         super(x, y);
@@ -44,13 +45,10 @@ public class Monitor extends Sprite implements Listener {
     }
 
     private float[][] genColors() {
-        float[][] res = new float[90][90];
+        float[][] res = new float[119][134];
 
-        int cpuIndex = (int) (cpuUsage * (cpuSheet.getColumns() - 1));
-        int bandwidthIndex = (int) (bandwidthUsage * (bandwidthSheet.getColumns() - 1));
-
-        storeColors(cpuSheet.getSprite(0, cpuIndex), res);
-        storeColors(cpuSheet.getSprite(0, bandwidthIndex), res);
+        storeColors(cpu, res);
+        storeColors(bandwidth, res);
 
         return res;
     }
@@ -123,30 +121,29 @@ public class Monitor extends Sprite implements Listener {
     }
 
     public void refreshCpuUsage() {
-        float usage = 0;
+        setCpuUsage(0);
         for (int i = 0; i < cpuAllocations.size(); i++) {
             CpuAllocation cpuAllocation = cpuAllocations.get(i);
-            float availableFrequency = (1f - cpuUsage) * cpuFrequency;
+            // Use of rounding to avoid float precision errors
+            float availableFrequency = Math.round(100 * (1f - cpuUsage) * cpuFrequency) / 100f;
             float requiredFrequency = cpuAllocation.getRequiredFrequency();
 
             if (requiredFrequency <= availableFrequency) {
-                // Usage of rounding to avoid float precision errors
-                usage += Math.round(100 * requiredFrequency / cpuFrequency) / 100;
+                setCpuUsage(getCpuUsage() + Math.round(100 * requiredFrequency / cpuFrequency) / 100f);
                 cpuAllocation.setAllocated(true);
             } else {
                 cpuAllocation.setAllocated(false);
             }
 
-            if (usage == 1) {
+            if (getCpuUsage() == 1) {
                 for (int j = i + 1; j < cpuAllocations.size(); j++) {
-                    cpuAllocation.setAllocated(false);
+                    cpuAllocations.get(j).setAllocated(false);
                 }
                 break;
             }
 
-            assert (usage <= 1);
+            assert (getCpuUsage() <= 1);
         }
-        setCpuUsage(usage);
     }
 
 
@@ -186,6 +183,16 @@ public class Monitor extends Sprite implements Listener {
         // FREEING
 
         clearDownloads();
+
+        // ELEMENTS CHECKING
+
+        graphCount += Main.delta;
+        if (graphCount > 0.5) {
+            graphCount = 0;
+            cpu.update(cpuUsage);
+            bandwidth.update(bandwidthUsage);
+            changed = true;
+        }
     }
 
     private void clearDownloads() {

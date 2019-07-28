@@ -14,6 +14,8 @@ public class LogDisplay extends Sprite {
         display = new Text[rows];
         for (int i = 0; i < display.length; i++)
             display[display.length - i - 1] = new Text(0, i * Text.getLetterSizeY(), "");
+
+        setColors(getColors());
     }
 
     @Override

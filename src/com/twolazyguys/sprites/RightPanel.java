@@ -12,13 +12,13 @@ import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
 public class RightPanel extends Sprite implements Listener {
 
-    private Bell bell = new Bell(90, 140);
-    private Monitor monitor = new Monitor(0, 20);
-    private NotificationManager notificationManager = new NotificationManager(10, 100);
+    private Bell bell = new Bell(47, 134);
+    private Monitor monitor = new Monitor(0, 0);
+    private NotificationManager notificationManager = new NotificationManager(0, 0);
     private boolean mainMode = true; // mainMode is the monitor
 
     public RightPanel() {
-        super(300, 0);
+        super(383, 5);
 
         Main.addListener(bell);
         Main.addListener(notificationManager);
@@ -28,11 +28,15 @@ public class RightPanel extends Sprite implements Listener {
     }
 
     private void genColors() {
-        float[][] res = new float[200][160];
+        float[][] res = new float[119][159];
 
         storeColors(bell, res);
         storeColors(mainMode ? monitor : notificationManager, res);
-        storeColors(mainMode ? notificationManager : monitor, new float[200][220]);
+
+        // PURGING
+
+        if (mainMode) notificationManager.getColors();
+        else monitor.getColors();
 
         setColors(res);
     }
