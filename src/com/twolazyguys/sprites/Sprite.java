@@ -25,7 +25,7 @@ public class Sprite {
     public Sprite(int x, int y, float[][] colors) {
         this.x = x;
         this.y = y;
-        this.colors = colors;
+        setColors(colors);
     }
 
     public int getX() {
@@ -41,7 +41,7 @@ public class Sprite {
     }
 
     public int getSizeY() {
-        if(colors.length==0) return 0;
+        if (colors.length == 0) return 0;
         return colors[0].length;
     }
 
@@ -62,7 +62,10 @@ public class Sprite {
     }
 
     public void setColors(float[][] colors) {
-        this.colors = colors;
+        this.colors = new float[colors.length][];
+        for (int i = 0; i < colors.length; i++) {
+            this.colors[i] = Arrays.copyOf(colors[i], colors[i].length);
+        }
         Main.callEvent(new SpriteChangedEvent(this));
     }
 
